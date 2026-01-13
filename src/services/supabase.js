@@ -174,6 +174,8 @@ export async function deleteUser(userId) {
  * Save a match (liked game)
  */
 export async function saveMatch(userId, game) {
+    console.log('Saving match:', { userId, gameId: game.id, gameName: game.name });
+
     const { data, error } = await supabase
         .from('matches')
         .insert({
@@ -187,7 +189,12 @@ export async function saveMatch(userId, game) {
         .select()
         .single();
 
-    if (error && error.code !== '23505') throw error; // Ignore duplicate
+    if (error && error.code !== '23505') {
+        console.error('Error saving match:', error);
+        throw error;
+    }
+
+    console.log('Match saved successfully:', data);
     return data;
 }
 
@@ -195,14 +202,21 @@ export async function saveMatch(userId, game) {
  * Get user's matches
  */
 export async function getUserMatches(userId) {
+    console.log('Loading matches for user:', userId);
+
     const { data, error } = await supabase
         .from('matches')
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    return data;
+    if (error) {
+        console.error('Error loading matches:', error);
+        throw error;
+    }
+
+    console.log('Loaded matches:', data?.length || 0, 'games');
+    return data || [];
 }
 
 /**

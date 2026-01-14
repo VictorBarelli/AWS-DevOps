@@ -58,3 +58,24 @@ output "staging_website_url" {
   description = "Staging website URL"
   value       = "https://${aws_cloudfront_distribution.staging.domain_name}"
 }
+
+# ECS Outputs
+output "ecr_repository_url" {
+  description = "ECR repository URL"
+  value       = aws_ecr_repository.app.repository_url
+}
+
+output "ecs_cluster_name" {
+  description = "ECS cluster name"
+  value       = aws_ecs_cluster.main.name
+}
+
+output "ecs_service_name" {
+  description = "ECS service name"
+  value       = aws_ecs_service.app.name
+}
+
+output "alb_dns_name" {
+  description = "Application Load Balancer DNS name"
+  value       = "http://${aws_lb.main.dns_name}"
+}

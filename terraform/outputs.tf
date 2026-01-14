@@ -42,3 +42,19 @@ output "logs_bucket_name" {
   description = "S3 bucket for access logs"
   value       = aws_s3_bucket.logs.id
 }
+
+# Staging Environment Outputs
+output "staging_s3_bucket_name" {
+  description = "Staging S3 bucket name"
+  value       = aws_s3_bucket.staging.id
+}
+
+output "staging_cloudfront_distribution_id" {
+  description = "Staging CloudFront distribution ID"
+  value       = aws_cloudfront_distribution.staging.id
+}
+
+output "staging_website_url" {
+  description = "Staging website URL"
+  value       = "https://${aws_cloudfront_distribution.staging.domain_name}"
+}

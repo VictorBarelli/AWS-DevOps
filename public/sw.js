@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gameswipe-v1';
+const CACHE_NAME = 'gameswipe-v3-unified';
 const ASSETS = [
     '/',
     '/index.html',

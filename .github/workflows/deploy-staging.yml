@@ -34,16 +34,22 @@ jobs:
           aws-region: us-east-1
 
       - name: Deploy to Staging S3
+        env:
+          STAGING_S3_BUCKET: ${{ secrets.STAGING_S3_BUCKET }}
         run: |
-          aws s3 sync ./dist s3://${{ secrets.STAGING_S3_BUCKET }} --delete
+          aws s3 sync ./dist s3://$STAGING_S3_BUCKET --delete
 
       - name: Invalidate Staging CloudFront
+        env:
+          STAGING_CLOUDFRONT_ID: ${{ secrets.STAGING_CLOUDFRONT_ID }}
         run: |
           aws cloudfront create-invalidation \
-            --distribution-id ${{ secrets.STAGING_CLOUDFRONT_ID }} \
+            --distribution-id $STAGING_CLOUDFRONT_ID \
             --paths "/*"
 
       - name: Post deployment URL
+        env:
+          CLOUDFRONT_DOMAIN: ${{ secrets.STAGING_CLOUDFRONT_DOMAIN }}
         run: |
           echo "🚀 Staging deployed!"
-          echo "URL: https://${{ secrets.STAGING_CLOUDFRONT_DOMAIN }}"
+          echo "URL: https://$CLOUDFRONT_DOMAIN"

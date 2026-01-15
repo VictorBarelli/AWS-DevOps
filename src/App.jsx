@@ -474,6 +474,9 @@ export default function App() {
 
                 {/* Mobile Navigation */}
                 <div className="mobile-nav desktop-only-hide">
+                    {/* Version Indicator for Debugging */}
+                    <div style={{ position: 'absolute', top: -15, right: 0, fontSize: 10, opacity: 0.5 }}>v4</div>
+
                     <button
                         className={`mobile-nav-btn ${mobilePanel === 'filters' ? 'active' : ''}`}
                         onClick={() => setMobilePanel(mobilePanel === 'filters' ? null : 'filters')}

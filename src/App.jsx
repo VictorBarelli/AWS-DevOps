@@ -473,9 +473,9 @@ export default function App() {
                 />
 
                 {/* Mobile Navigation */}
-                <div className="mobile-nav desktop-only-hide">
+                <div className="mobile-nav">
                     {/* Version Indicator for Debugging */}
-                    <div style={{ position: 'absolute', top: -15, right: 0, fontSize: 10, opacity: 0.5 }}>v4</div>
+                    <div style={{ position: 'absolute', top: -15, right: 0, fontSize: 10, opacity: 0.5 }}>v5</div>
 
                     <button
                         className={`mobile-nav-btn ${mobilePanel === 'filters' ? 'active' : ''}`}

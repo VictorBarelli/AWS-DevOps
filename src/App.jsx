@@ -35,6 +35,7 @@ export default function App() {
     const [showAdmin, setShowAdmin] = useState(false);
     const [showOnboarding, setShowOnboarding] = useState(false);
     const [selectedGameId, setSelectedGameId] = useState(null);
+    const [mobilePanel, setMobilePanel] = useState(null); // 'filters' | 'matches' | null
 
     // Game State
     const [games, setGames] = useState([]);
@@ -388,6 +389,7 @@ export default function App() {
         <>
             <div className="app">
                 {/* Left Panel - Filters */}
+                {/* Left Panel - Filters */}
                 <FilterPanel
                     genres={genres}
                     selectedGenres={selectedGenres}
@@ -400,6 +402,8 @@ export default function App() {
                     }}
                     onLogout={handleLogout}
                     onOpenAdmin={() => setShowAdmin(true)}
+                    isOpen={mobilePanel === 'filters'}
+                    onClose={() => setMobilePanel(null)}
                 />
 
                 {/* Center - Swipe Area */}
@@ -458,7 +462,43 @@ export default function App() {
                     matches={matches}
                     onRemoveMatch={handleRemoveMatch}
                     onMatchClick={(game) => setSelectedGameId(game.id)}
+                    isOpen={mobilePanel === 'matches'}
+                    onClose={() => setMobilePanel(null)}
                 />
+
+                {/* Mobile Overlay */}
+                <div
+                    className={`mobile-overlay ${mobilePanel ? 'visible' : ''}`}
+                    onClick={() => setMobilePanel(null)}
+                />
+
+                {/* Mobile Navigation */}
+                <div className="mobile-nav desktop-only-hide">
+                    <button
+                        className={`mobile-nav-btn ${mobilePanel === 'filters' ? 'active' : ''}`}
+                        onClick={() => setMobilePanel(mobilePanel === 'filters' ? null : 'filters')}
+                    >
+                        <span>🎮</span>
+                        <span>Filtros</span>
+                    </button>
+
+                    <button
+                        className={`mobile-nav-btn ${!mobilePanel ? 'active' : ''}`}
+                        onClick={() => setMobilePanel(null)}
+                    >
+                        <span>🔥</span>
+                        <span>Swipe</span>
+                    </button>
+
+                    <button
+                        className={`mobile-nav-btn ${mobilePanel === 'matches' ? 'active' : ''}`}
+                        onClick={() => setMobilePanel(mobilePanel === 'matches' ? null : 'matches')}
+                    >
+                        <span>💚</span>
+                        <span>Matches</span>
+                        {matches.length > 0 && <span className="badge-dot"></span>}
+                    </button>
+                </div>
             </div>
 
             {/* Admin Panel */}

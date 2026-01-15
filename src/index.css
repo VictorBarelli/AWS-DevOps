@@ -1698,7 +1698,7 @@ body {
 }
 
 /* ==========================================
-   Mobile Responsive
+   Mobile Responsive - Tinder Style
    ========================================== */
 
 @media (max-width: 768px) {
@@ -1708,6 +1708,8 @@ body {
     grid-template-columns: 1fr;
     padding: var(--spacing-sm);
     gap: var(--spacing-sm);
+    padding-bottom: 80px;
+    /* Space for nav bar */
   }
 
   /* Hide side panels by default on mobile */
@@ -1716,11 +1718,15 @@ body {
     position: fixed;
     top: 0;
     bottom: 0;
-    width: 85%;
-    max-width: 320px;
+    width: 100%;
+    max-width: none;
     z-index: 1000;
     transition: transform 0.3s ease;
     overflow-y: auto;
+    border-radius: 0;
+    margin: 0;
+    padding-bottom: 90px;
+    background: var(--bg-primary);
   }
 
   .filter-panel {
@@ -1733,80 +1739,28 @@ body {
     transform: translateX(100%);
   }
 
-  .filter-panel.open {
-    transform: translateX(0);
-  }
-
+  .filter-panel.open,
   .matches-panel.open {
     transform: translateX(0);
   }
 
-  /* Card container - full width */
-  .swipe-area {
-    min-height: calc(100vh - 180px);
-    padding: 0;
-  }
-
-  .card-container {
-    max-width: 100%;
-    width: 100%;
-    height: calc(100vh - 220px);
-    max-height: 600px;
-  }
-
-  .game-card {
-    border-radius: var(--border-radius-lg);
-  }
-
-  .game-card-image {
-    height: 60%;
-  }
-
-  .game-card-content {
-    height: 40%;
-    padding: var(--spacing-md);
-  }
-
-  .game-card-title {
-    font-size: var(--font-size-lg);
-  }
-
-  /* Action buttons - larger for touch */
-  .action-buttons {
-    margin-top: var(--spacing-md);
-    gap: var(--spacing-2xl);
-  }
-
-  .action-btn {
-    width: 72px;
-    height: 72px;
-    font-size: 2rem;
-  }
-
-  /* Panel styling */
-  .panel {
-    padding: var(--spacing-md);
-    border-radius: var(--border-radius-md);
-  }
-
-  .panel-header {
-    margin-bottom: var(--spacing-md);
-    padding-bottom: var(--spacing-sm);
-  }
-
-  /* Mobile navigation */
+  /* Navigation Bar - Tinder Style */
   .mobile-nav {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--bg-secondary);
-    border-top: 1px solid var(--border-color);
-    padding: var(--spacing-sm) var(--spacing-md);
-    padding-bottom: env(safe-area-inset-bottom, var(--spacing-sm));
-    z-index: 100;
-    justify-content: space-around;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    background: rgba(30, 30, 35, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    padding: 10px;
+    z-index: 101;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   }
 
   .mobile-nav-btn {
@@ -1814,111 +1768,116 @@ body {
     border: none;
     color: var(--text-muted);
     font-size: 1.5rem;
-    padding: var(--spacing-sm);
+    padding: 8px;
     cursor: pointer;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 4px;
+    position: relative;
+    border-radius: 20px;
+    transition: all 0.2s ease;
   }
 
-  .mobile-nav-btn span {
-    font-size: var(--font-size-xs);
+  .mobile-nav-btn span:first-child {
+    font-size: 1.5rem;
+    transition: transform 0.2s;
+  }
+
+  .mobile-nav-btn span:last-child {
+    font-size: 10px;
+    font-weight: 600;
   }
 
   .mobile-nav-btn.active {
-    color: var(--accent-primary);
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
   }
 
-  /* Overlay for mobile panels */
-  .mobile-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
+  .mobile-nav-btn.active span:first-child {
+    transform: scale(1.1);
+  }
+
+  /* Badge styling */
+  .badge-dot {
+    position: absolute;
+    top: 5px;
+    right: 25%;
+    width: 16px;
+    height: 16px;
+    background: #ec4899;
+    border-radius: 50%;
+    color: white;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-secondary);
+  }
+
+  /* Main Swipe Area */
+  .swipe-area {
+    min-height: calc(100vh - 140px);
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .card-container {
+    width: 100%;
+    height: 60vh;
+    max-height: 500px;
+    margin-bottom: 20px;
+  }
+
+  .game-card {
+    border-radius: 20px;
+  }
+
+  .game-card-content {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 60%, transparent 100%);
+    position: absolute;
+    bottom: 0;
     left: 0;
     right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
+    height: 50%;
+    justify-content: flex-end;
   }
 
-  .mobile-overlay.visible {
-    display: block;
+  .game-card-image {
+    height: 100%;
   }
 
-  /* Login page mobile */
-  .login-container {
-    padding: var(--spacing-md);
-  }
-
-  .login-card {
-    padding: var(--spacing-lg);
-    max-width: 100%;
-  }
-
-  /* Modal mobile */
-  .modal-overlay {
-    padding: 0;
-    align-items: flex-end;
-  }
-
-  .modal-content {
-    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
-    max-height: 90vh;
-    width: 100%;
-    max-width: 100%;
-  }
-
-  /* Hide desktop elements */
-  .desktop-only {
-    display: none !important;
-  }
-
-  /* Body padding for mobile nav */
-  body {
-    padding-bottom: 70px;
-  }
-}
-
-/* Extra small screens */
-@media (max-width: 380px) {
-  .game-card-title {
-    font-size: var(--font-size-md);
+  /* Action Buttons */
+  .action-buttons {
+    margin-top: auto;
+    gap: 30px;
+    padding-bottom: 20px;
   }
 
   .action-btn {
-    width: 64px;
-    height: 64px;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    background: #1a1a1e;
+    border-width: 1px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
 
-  .genre-tag {
-    font-size: 10px;
-    padding: 2px 6px;
-  }
-}
-
-/* PWA standalone mode */
-@media (display-mode: standalone) {
-  body {
-    padding-top: env(safe-area-inset-top);
+  .action-btn.nope {
+    color: #ef4444;
+    border-color: #ef4444;
   }
 
-  .app {
-    min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-  }
-}
-
-/* Hide scrollbar on mobile */
-@media (max-width: 768px) {
-
-  .filter-options::-webkit-scrollbar,
-  .matches-list::-webkit-scrollbar {
-    display: none;
+  .action-btn.like {
+    color: #10b981;
+    border-color: #10b981;
   }
 
-  .filter-options,
-  .matches-list {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  /* Hide desktop elements */
+  .desktop-only-hide {
+    display: grid !important;
   }
 }

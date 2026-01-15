@@ -478,8 +478,8 @@ export default function App() {
                         className={`mobile-nav-btn ${mobilePanel === 'filters' ? 'active' : ''}`}
                         onClick={() => setMobilePanel(mobilePanel === 'filters' ? null : 'filters')}
                     >
-                        <span>🎮</span>
-                        <span>Filtros</span>
+                        <span>🧭</span>
+                        <span>Explore</span>
                     </button>
 
                     <button
@@ -487,7 +487,7 @@ export default function App() {
                         onClick={() => setMobilePanel(null)}
                     >
                         <span>🔥</span>
-                        <span>Swipe</span>
+                        <span>Home</span>
                     </button>
 
                     <button
@@ -495,24 +495,25 @@ export default function App() {
                         onClick={() => setMobilePanel(mobilePanel === 'matches' ? null : 'matches')}
                     >
                         <span>💚</span>
-                        <span>Matches</span>
-                        {matches.length > 0 && <span className="badge-dot"></span>}
+                        <span>Likes</span>
+                        {matches.length > 0 && <span className="badge-dot">{matches.length}</span>}
                     </button>
                 </div>
             </div>
 
             {/* Admin Panel */}
-            <AnimatePresence>
+            < AnimatePresence >
                 {showAdmin && profile?.role === 'admin' && (
                     <AdminPanel
                         user={user}
                         onClose={() => setShowAdmin(false)}
                     />
-                )}
-            </AnimatePresence>
+                )
+                }
+            </AnimatePresence >
 
             {/* Game Details Modal */}
-            <AnimatePresence>
+            < AnimatePresence >
                 {selectedGameId && (
                     <GameDetailsModal
                         gameId={selectedGameId}
@@ -520,7 +521,7 @@ export default function App() {
                         onSwipe={handleSwipe}
                     />
                 )}
-            </AnimatePresence>
+            </AnimatePresence >
         </>
     );
 }

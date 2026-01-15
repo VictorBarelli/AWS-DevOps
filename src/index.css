@@ -1696,3 +1696,188 @@ body {
 .match-item:hover .match-view-hint {
   opacity: 1;
 }
+
+/* ==========================================
+   Mobile Responsive - Tinder Style
+   ========================================== */
+
+@media (max-width: 768px) {
+
+  /* App layout - single column */
+  .app {
+    grid-template-columns: 1fr;
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+    padding-bottom: 80px;
+    /* Space for nav bar */
+  }
+
+  /* Hide side panels by default on mobile */
+  .filter-panel,
+  .matches-panel {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: none;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+    border-radius: 0;
+    margin: 0;
+    padding-bottom: 90px;
+    background: var(--bg-primary);
+  }
+
+  .filter-panel {
+    left: 0;
+    transform: translateX(-100%);
+  }
+
+  .matches-panel {
+    right: 0;
+    transform: translateX(100%);
+  }
+
+  .filter-panel.open,
+  .matches-panel.open {
+    transform: translateX(0);
+  }
+
+  /* Navigation Bar - Tinder Style */
+  .mobile-nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    background: rgba(30, 30, 35, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    padding: 10px;
+    z-index: 101;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .mobile-nav-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    position: relative;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+  }
+
+  .mobile-nav-btn span:first-child {
+    font-size: 1.5rem;
+    transition: transform 0.2s;
+  }
+
+  .mobile-nav-btn span:last-child {
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .mobile-nav-btn.active {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .mobile-nav-btn.active span:first-child {
+    transform: scale(1.1);
+  }
+
+  /* Badge styling */
+  .badge-dot {
+    position: absolute;
+    top: 5px;
+    right: 25%;
+    width: 16px;
+    height: 16px;
+    background: #ec4899;
+    border-radius: 50%;
+    color: white;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-secondary);
+  }
+
+  /* Main Swipe Area */
+  .swipe-area {
+    min-height: calc(100vh - 140px);
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .card-container {
+    width: 100%;
+    height: 60vh;
+    max-height: 500px;
+    margin-bottom: 20px;
+  }
+
+  .game-card {
+    border-radius: 20px;
+  }
+
+  .game-card-content {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 60%, transparent 100%);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    justify-content: flex-end;
+  }
+
+  .game-card-image {
+    height: 100%;
+  }
+
+  /* Action Buttons */
+  .action-buttons {
+    margin-top: auto;
+    gap: 30px;
+    padding-bottom: 20px;
+  }
+
+  .action-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    background: #1a1a1e;
+    border-width: 1px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .action-btn.nope {
+    color: #ef4444;
+    border-color: #ef4444;
+  }
+
+  .action-btn.like {
+    color: #10b981;
+    border-color: #10b981;
+  }
+
+  /* Hide desktop elements */
+  .desktop-only-hide {
+    display: grid !important;
+  }
+}

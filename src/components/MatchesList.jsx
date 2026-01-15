@@ -1,8 +1,14 @@
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function MatchesList({ matches, onRemoveMatch, onMatchClick }) {
+export default function MatchesList({
+    matches,
+    onRemoveMatch,
+    onMatchClick,
+    isOpen,      // Mobile: is drawer open
+    onClose      // Mobile: close drawer
+}) {
     return (
-        <div className="panel matches-panel">
+        <div className={`panel matches-panel ${isOpen ? 'open' : ''}`}>
             {/* Header */}
             <div className="panel-header">
                 <span className="panel-icon">💚</span>

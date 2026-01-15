@@ -5,10 +5,12 @@ export default function FilterPanel({
     onClearFilters,
     user,
     onLogout,
-    onOpenAdmin
+    onOpenAdmin,
+    isOpen,      // Mobile: is drawer open
+    onClose      // Mobile: close drawer
 }) {
     return (
-        <div className="panel filter-panel">
+        <div className={`panel filter-panel ${isOpen ? 'open' : ''}`}>
             {/* Logo */}
             <div className="logo">
                 <span className="logo-icon">🎮</span>

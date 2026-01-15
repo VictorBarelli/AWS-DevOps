@@ -5,28 +5,19 @@ const supabaseAnonKey = 'sb_publishable_p1GzHw_kM_paC3HDn6FRew_4Npkc5cP';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// ==========================================
-// Auth Functions
-// ==========================================
+// Auth
 
-/**
- * Sign up a new user
- */
 export async function signUp(email, password, name) {
     const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-            data: {
-                name,
-                role: 'user' // Default role
-            }
+            data: { name, role: 'user' }
         }
     });
 
     if (error) throw error;
 
-    // Create profile in profiles table
     if (data.user) {
         await supabase.from('profiles').insert({
             id: data.user.id,
@@ -39,46 +30,29 @@ export async function signUp(email, password, name) {
     return data;
 }
 
-/**
- * Sign in existing user
- */
 export async function signIn(email, password) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-    });
-
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
     return data;
 }
 
-/**
- * Sign in with Google OAuth
- */
 export async function signInWithGoogle() {
     const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: {
-            redirectTo: window.location.origin
-        }
+        options: { redirectTo: window.location.origin }
     });
-
     if (error) throw error;
     return data;
 }
 
-/**
- * Create or update profile for OAuth users
- */
 export async function createOrUpdateProfile(user) {
-    const { data: existingProfile } = await supabase
+    const { data: existing } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
         .single();
 
-    if (!existingProfile) {
-        // Create new profile
+    if (!existing) {
         await supabase.from('profiles').insert({
             id: user.id,
             email: user.email,
@@ -88,29 +62,20 @@ export async function createOrUpdateProfile(user) {
         });
     }
 
-    return existingProfile;
+    return existing;
 }
 
-/**
- * Sign out current user
- */
 export async function signOut() {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
 }
 
-/**
- * Get current session
- */
 export async function getSession() {
     const { data: { session }, error } = await supabase.auth.getSession();
     if (error) throw error;
     return session;
 }
 
-/**
- * Get current user profile with role
- */
 export async function getUserProfile(userId) {
     const { data, error } = await supabase
         .from('profiles')
@@ -122,13 +87,8 @@ export async function getUserProfile(userId) {
     return data;
 }
 
-// ==========================================
-// User Management (Admin)
-// ==========================================
+// Admin functions
 
-/**
- * Get all users (admin only)
- */
 export async function getAllUsers() {
     const { data, error } = await supabase
         .from('profiles')
@@ -139,9 +99,6 @@ export async function getAllUsers() {
     return data;
 }
 
-/**
- * Update user role (admin only)
- */
 export async function updateUserRole(userId, newRole) {
     const { data, error } = await supabase
         .from('profiles')
@@ -154,28 +111,14 @@ export async function updateUserRole(userId, newRole) {
     return data;
 }
 
-/**
- * Delete user (admin only)
- */
 export async function deleteUser(userId) {
-    const { error } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('id', userId);
-
+    const { error } = await supabase.from('profiles').delete().eq('id', userId);
     if (error) throw error;
 }
 
-// ==========================================
-// Matches (Game Favorites)
-// ==========================================
+// Matches
 
-/**
- * Save a match (liked game)
- */
 export async function saveMatch(userId, game) {
-    console.log('Saving match:', { userId, gameId: game.id, gameName: game.name });
-
     const { data, error } = await supabase
         .from('matches')
         .insert({
@@ -189,39 +132,21 @@ export async function saveMatch(userId, game) {
         .select()
         .single();
 
-    if (error && error.code !== '23505') {
-        console.error('Error saving match:', error);
-        throw error;
-    }
-
-    console.log('Match saved successfully:', data);
+    if (error && error.code !== '23505') throw error; // ignore duplicate
     return data;
 }
 
-/**
- * Get user's matches
- */
 export async function getUserMatches(userId) {
-    console.log('Loading matches for user:', userId);
-
     const { data, error } = await supabase
         .from('matches')
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
-    if (error) {
-        console.error('Error loading matches:', error);
-        throw error;
-    }
-
-    console.log('Loaded matches:', data?.length || 0, 'games');
+    if (error) throw error;
     return data || [];
 }
 
-/**
- * Remove a match
- */
 export async function removeMatch(userId, gameId) {
     const { error } = await supabase
         .from('matches')
@@ -232,9 +157,6 @@ export async function removeMatch(userId, gameId) {
     if (error) throw error;
 }
 
-/**
- * Get match statistics (admin)
- */
 export async function getMatchStats() {
     const { data, error } = await supabase
         .from('matches')
@@ -243,7 +165,6 @@ export async function getMatchStats() {
 
     if (error) throw error;
 
-    // Count occurrences
     const counts = {};
     data.forEach(m => {
         counts[m.game_name] = (counts[m.game_name] || 0) + 1;

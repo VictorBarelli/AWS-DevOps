@@ -1,7 +1,4 @@
-# ==========================================
-# GameSwipe - Terraform Configuration
-# AWS S3 + CloudFront + SSL
-# ==========================================
+# Terraform config
 
 terraform {
   required_version = ">= 1.0"
@@ -13,7 +10,7 @@ terraform {
     }
   }
 
-  # Backend for state management (optional - can use S3)
+  # Remote state (uncomment for team usage)
   # backend "s3" {
   #   bucket = "gameswipe-terraform-state"
   #   key    = "terraform.tfstate"
@@ -21,7 +18,6 @@ terraform {
   # }
 }
 
-# AWS Provider
 provider "aws" {
   region = var.aws_region
 
@@ -34,7 +30,6 @@ provider "aws" {
   }
 }
 
-# Provider for ACM certificate (must be us-east-1 for CloudFront)
 provider "aws" {
   alias  = "us_east_1"
   region = "us-east-1"

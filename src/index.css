@@ -180,13 +180,13 @@ body {
 }
 
 .card-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: calc(100px + env(safe-area-inset-bottom));
+  position: relative;
   width: 100%;
-  height: auto;
+  flex: 1;
+  /* Take remaining space */
+  margin-bottom: var(--spacing-md);
+  /* Space between card and buttons */
+  z-index: 1;
 }
 
 .game-card {
@@ -988,26 +988,30 @@ body {
   animation: fadeIn 0.3s ease-in-out;
 }
 
-/* Home Tab - Fullscreen card layout */
+/* Home Tab - Flex layout */
 .tab-content.home-tab {
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 80px);
+  height: calc(100dvh - 80px);
   padding: 0;
-  height: calc(100vh - 70px);
-  height: calc(100dvh - 70px);
   overflow: hidden;
+  position: relative;
+  /* Restore padding-bottom for safe area + nav */
+  padding-bottom: calc(90px + env(safe-area-inset-bottom));
 }
 
-/* Action buttons overlay on card */
+/* Action buttons - In flow */
 .tab-content.home-tab .action-buttons {
-  position: absolute;
-  bottom: calc(90px + env(safe-area-inset-bottom));
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
+  position: relative;
+  bottom: auto;
+  left: auto;
+  transform: none;
   width: 100%;
+  z-index: 100;
+  margin-top: 0;
   padding-bottom: 0;
-  pointer-events: none;
-  /* Let clicks pass through area */
+  pointer-events: auto;
 }
 
 .tab-content.home-tab .action-buttons button {

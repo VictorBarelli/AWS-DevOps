@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gameswipe-v9-layout-overlap-fix';
+const CACHE_NAME = 'gameswipe-v10-flexbox-fix';
 const ASSETS = [
     '/',
     '/index.html',

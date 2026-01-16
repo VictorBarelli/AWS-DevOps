@@ -173,12 +173,13 @@ body {
 }
 
 .card-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 70px;
   width: 100%;
-  height: calc(100vh - 280px);
-  max-height: none;
-  margin-top: 40px;
-  margin-bottom: 8px;
-  position: relative;
+  height: auto;
 }
 
 .game-card {
@@ -974,14 +975,21 @@ body {
   animation: fadeIn 0.3s ease-in-out;
 }
 
-/* Home Tab - Fixed layout */
+/* Home Tab - Fullscreen card layout */
 .tab-content.home-tab {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0 16px;
+  position: relative;
+  padding: 0;
   height: calc(100vh - 70px);
   overflow: hidden;
+}
+
+/* Action buttons overlay on card */
+.tab-content.home-tab .action-buttons {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
 }
 
 @keyframes fadeIn {

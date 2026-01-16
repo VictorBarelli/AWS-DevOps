@@ -6,7 +6,40 @@ on:
       - develop
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Build application
+        run: npm run build
+
+      - name: Verify build output
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "❌ Build failed: dist/ not found"
+            exit 1
+          fi
+          echo "✅ Build verified"
+
   deploy-staging:
+    needs: validate
     runs-on: ubuntu-latest
     environment: staging
 
@@ -25,6 +58,10 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_RAWG_API_KEY: ${{ secrets.VITE_RAWG_API_KEY }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -37,19 +74,46 @@ jobs:
         env:
           STAGING_S3_BUCKET: ${{ secrets.STAGING_S3_BUCKET }}
         run: |
-          aws s3 sync ./dist s3://$STAGING_S3_BUCKET --delete
+          aws s3 sync ./dist s3://$STAGING_S3_BUCKET \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "*.html" \
+            --exclude "*.json"
+
+          aws s3 sync ./dist s3://$STAGING_S3_BUCKET \
+            --cache-control "no-cache" \
+            --exclude "*" \
+            --include "*.html" \
+            --include "*.json"
 
       - name: Invalidate Staging CloudFront
         env:
           STAGING_CLOUDFRONT_ID: ${{ secrets.STAGING_CLOUDFRONT_ID }}
         run: |
-          aws cloudfront create-invalidation \
+          INVALIDATION_ID=$(aws cloudfront create-invalidation \
             --distribution-id $STAGING_CLOUDFRONT_ID \
-            --paths "/*"
+            --paths "/*" \
+            --query 'Invalidation.Id' \
+            --output text)
+          echo "Invalidation ID: $INVALIDATION_ID"
 
-      - name: Post deployment URL
+      - name: Smoke test
         env:
           CLOUDFRONT_DOMAIN: ${{ secrets.STAGING_CLOUDFRONT_DOMAIN }}
         run: |
-          echo "🚀 Staging deployed!"
+          sleep 10
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://$CLOUDFRONT_DOMAIN)
+          if [ $STATUS -eq 200 ]; then
+            echo "✅ Smoke test passed (HTTP $STATUS)"
+          else
+            echo "⚠️ Smoke test returned HTTP $STATUS (may need more time)"
+          fi
+
+      - name: Post deployment info
+        env:
+          CLOUDFRONT_DOMAIN: ${{ secrets.STAGING_CLOUDFRONT_DOMAIN }}
+        run: |
+          echo "🚀 Staging deployed successfully!"
           echo "URL: https://$CLOUDFRONT_DOMAIN"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"

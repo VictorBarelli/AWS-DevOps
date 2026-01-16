@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import SwipeCard from './components/SwipeCard';
-import FilterPanel from './components/FilterPanel';
-import MatchesList from './components/MatchesList';
 import LoginPage from './components/LoginPage';
 import AdminPanel from './components/AdminPanel';
 import OnboardingPreferences from './components/OnboardingPreferences';
 import GameDetailsModal from './components/GameDetailsModal';
+import TabNavigation from './components/TabNavigation';
+import HomeTab from './components/HomeTab';
+import LikesTab from './components/LikesTab';
+import FiltersTab from './components/FiltersTab';
 import { fetchGames, fetchGenres } from './services/rawgApi';
 import {
     supabase,
@@ -35,7 +36,7 @@ export default function App() {
     const [showAdmin, setShowAdmin] = useState(false);
     const [showOnboarding, setShowOnboarding] = useState(false);
     const [selectedGameId, setSelectedGameId] = useState(null);
-    const [mobilePanel, setMobilePanel] = useState(null); // 'filters' | 'matches' | null
+    const [activeTab, setActiveTab] = useState('home'); // 'home' | 'likes' | 'filters'
 
     // Game State
     const [games, setGames] = useState([]);
@@ -387,136 +388,64 @@ export default function App() {
 
     return (
         <>
-            <div className="app">
-                {/* Left Panel - Filters */}
-                {/* Left Panel - Filters */}
-                <FilterPanel
-                    genres={genres}
-                    selectedGenres={selectedGenres}
-                    onGenreChange={handleGenreChange}
-                    onClearFilters={handleClearFilters}
-                    user={{
-                        ...user,
-                        name: profile?.name || user.user_metadata?.name || user.email,
-                        role: profile?.role
-                    }}
-                    onLogout={handleLogout}
-                    onOpenAdmin={() => setShowAdmin(true)}
-                    isOpen={mobilePanel === 'filters'}
-                    onClose={() => setMobilePanel(null)}
-                />
+            <div className="app tinder-layout">
+                {/* Main Content Area */}
+                <div className="main-content">
+                    <AnimatePresence mode="wait">
+                        {activeTab === 'home' && (
+                            <HomeTab
+                                loading={loading}
+                                currentCards={currentCards}
+                                onSwipe={handleSwipe}
+                                onCardClick={setSelectedGameId}
+                                onRefresh={handleRefresh}
+                                onButtonSwipe={handleButtonSwipe}
+                            />
+                        )}
 
-                {/* Center - Swipe Area */}
-                <div className="swipe-area">
-                    {loading ? (
-                        <div className="loading">
-                            <div className="loading-spinner"></div>
-                            <p>Carregando jogos...</p>
-                        </div>
-                    ) : currentCards.length === 0 ? (
-                        <div className="no-more-cards">
-                            <h3>🎮 Fim dos jogos!</h3>
-                            <p>Você viu todos os jogos disponíveis com esses filtros.</p>
-                            <button className="refresh-btn" onClick={handleRefresh}>
-                                🔄 Ver novamente
-                            </button>
-                        </div>
-                    ) : (
-                        <>
-                            <div className="card-container">
-                                <AnimatePresence>
-                                    {currentCards.map((game, i) => (
-                                        <SwipeCard
-                                            key={game.id}
-                                            game={game}
-                                            onSwipe={handleSwipe}
-                                            isTop={i === 0}
-                                            onCardClick={(g) => setSelectedGameId(g.id)}
-                                        />
-                                    ))}
-                                </AnimatePresence>
-                            </div>
+                        {activeTab === 'likes' && (
+                            <LikesTab
+                                matches={matches}
+                                onRemoveMatch={handleRemoveMatch}
+                                onMatchClick={(game) => setSelectedGameId(game.id)}
+                            />
+                        )}
 
-                            <div className="action-buttons">
-                                <button
-                                    className="action-btn nope"
-                                    onClick={() => handleButtonSwipe('left')}
-                                    title="Não curti"
-                                >
-                                    ✕
-                                </button>
-                                <button
-                                    className="action-btn like"
-                                    onClick={() => handleButtonSwipe('right')}
-                                    title="Quero jogar!"
-                                >
-                                    ♥
-                                </button>
-                            </div>
-                        </>
-                    )}
+                        {activeTab === 'filters' && (
+                            <FiltersTab
+                                genres={genres}
+                                selectedGenres={selectedGenres}
+                                onGenreToggle={handleGenreChange}
+                                onClearFilters={handleClearFilters}
+                                user={user}
+                                profile={profile}
+                                onLogout={handleLogout}
+                                onOpenAdmin={() => setShowAdmin(true)}
+                            />
+                        )}
+                    </AnimatePresence>
                 </div>
 
-                {/* Right Panel - Matches */}
-                <MatchesList
-                    matches={matches}
-                    onRemoveMatch={handleRemoveMatch}
-                    onMatchClick={(game) => setSelectedGameId(game.id)}
-                    isOpen={mobilePanel === 'matches'}
-                    onClose={() => setMobilePanel(null)}
+                {/* Bottom Tab Navigation */}
+                <TabNavigation
+                    activeTab={activeTab}
+                    onTabChange={setActiveTab}
+                    matchCount={matches.length}
                 />
-
-                {/* Mobile Overlay */}
-                <div
-                    className={`mobile-overlay ${mobilePanel ? 'visible' : ''}`}
-                    onClick={() => setMobilePanel(null)}
-                />
-
-                {/* Mobile Navigation */}
-                <div className="mobile-nav">
-                    {/* Version Indicator for Debugging */}
-                    <div style={{ position: 'absolute', top: -15, right: 0, fontSize: 10, opacity: 0.5 }}>v5</div>
-
-                    <button
-                        className={`mobile-nav-btn ${mobilePanel === 'filters' ? 'active' : ''}`}
-                        onClick={() => setMobilePanel(mobilePanel === 'filters' ? null : 'filters')}
-                    >
-                        <span>🧭</span>
-                        <span>Explore</span>
-                    </button>
-
-                    <button
-                        className={`mobile-nav-btn ${!mobilePanel ? 'active' : ''}`}
-                        onClick={() => setMobilePanel(null)}
-                    >
-                        <span>🔥</span>
-                        <span>Home</span>
-                    </button>
-
-                    <button
-                        className={`mobile-nav-btn ${mobilePanel === 'matches' ? 'active' : ''}`}
-                        onClick={() => setMobilePanel(mobilePanel === 'matches' ? null : 'matches')}
-                    >
-                        <span>💚</span>
-                        <span>Likes</span>
-                        {matches.length > 0 && <span className="badge-dot">{matches.length}</span>}
-                    </button>
-                </div>
             </div>
 
             {/* Admin Panel */}
-            < AnimatePresence >
+            <AnimatePresence>
                 {showAdmin && profile?.role === 'admin' && (
                     <AdminPanel
                         user={user}
                         onClose={() => setShowAdmin(false)}
                     />
-                )
-                }
-            </AnimatePresence >
+                )}
+            </AnimatePresence>
 
             {/* Game Details Modal */}
-            < AnimatePresence >
+            <AnimatePresence>
                 {selectedGameId && (
                     <GameDetailsModal
                         gameId={selectedGameId}
@@ -524,7 +453,7 @@ export default function App() {
                         onSwipe={handleSwipe}
                     />
                 )}
-            </AnimatePresence >
+            </AnimatePresence>
         </>
     );
 }

@@ -43,7 +43,7 @@ export default function AdminPanel({ user, onClose }) {
     };
 
     const handleDeleteUser = async (userId) => {
-        if (!confirm('Tem certeza que deseja excluir este usuário?')) return;
+        if (!window.confirm('Tem certeza que deseja excluir este usuário?')) return;
 
         try {
             await deleteUser(userId);

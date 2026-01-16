@@ -77,12 +77,18 @@ body {
   background: var(--bg-primary);
   color: var(--text-primary);
   height: 100vh;
+  height: 100dvh;
+  /* Support for mobile browsers */
   line-height: 1.5;
   overflow: hidden;
+  /* Prevent bounce on iOS */
+  position: fixed;
+  width: 100%;
 }
 
 #root {
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 
@@ -94,6 +100,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: 100dvh;
   padding: 0;
   position: relative;
   max-width: 600px;
@@ -498,7 +505,7 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   position: fixed;
-  bottom: 20px;
+  bottom: calc(20px + env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%);
   width: 90%;
@@ -986,16 +993,19 @@ body {
   position: relative;
   padding: 0;
   height: calc(100vh - 70px);
+  height: calc(100dvh - 70px);
   overflow: hidden;
 }
 
 /* Action buttons overlay on card */
 .tab-content.home-tab .action-buttons {
   position: absolute;
-  bottom: 20px;
+  bottom: calc(20px + env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%);
   z-index: 100;
+  width: 100%;
+  padding-bottom: 0;
 }
 
 /* Undo Button */
@@ -1030,10 +1040,13 @@ body {
 
 /* Likes Tab - Scrollable */
 .tab-content.likes-tab {
-  height: calc(100vh - 70px);
+  height: calc(100vh - 80px);
+  height: calc(100dvh - 80px);
   overflow-y: auto;
   overflow-x: hidden;
-  padding-bottom: 20px;
+  padding-bottom: calc(90px + env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling: touch;
+  /* Smooth scrolling on iOS */
 }
 
 @keyframes fadeIn {

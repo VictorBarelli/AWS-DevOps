@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gameswipe-v7-fallback-fix';
+const CACHE_NAME = 'gameswipe-v8-mobile-fix';
 const ASSETS = [
     '/',
     '/index.html',

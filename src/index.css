@@ -207,6 +207,15 @@ body {
   pointer-events: none;
 }
 
+.game-card-image.fallback-image {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #2c3e50, #4ca1af);
+  object-fit: contain;
+}
+
 .game-card-content {
   background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 60%, transparent 100%);
   position: absolute;

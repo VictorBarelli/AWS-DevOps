@@ -4,6 +4,7 @@ import { motion, useMotionValue, useTransform } from 'framer-motion';
 export default function SwipeCard({ game, onSwipe, isTop, onCardClick }) {
     const [exitX, setExitX] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
+    const [imageError, setImageError] = useState(false);
 
     const x = useMotionValue(0);
     const rotate = useTransform(x, [-200, 200], [-25, 25]);
@@ -79,12 +80,27 @@ export default function SwipeCard({ game, onSwipe, isTop, onCardClick }) {
             </motion.div>
 
             {/* Game Image */}
-            <img
-                src={game.image || 'https://via.placeholder.com/400x300?text=No+Image'}
-                alt={game.name}
-                className="game-card-image"
-                draggable={false}
-            />
+            {!imageError ? (
+                <img
+                    src={game.image}
+                    alt={game.name}
+                    className="game-card-image"
+                    draggable={false}
+                    onError={() => setImageError(true)}
+                />
+            ) : (
+                <div className="game-card-image fallback-image">
+                    <span style={{ fontSize: '80px', opacity: 0.5 }}>🎮</span>
+                    <span style={{
+                        marginTop: '20px',
+                        color: 'rgba(255,255,255,0.6)',
+                        fontSize: '18px',
+                        fontWeight: 500
+                    }}>
+                        Sem imagem disponível
+                    </span>
+                </div>
+            )}
 
             {/* Click hint */}
             {isTop && (

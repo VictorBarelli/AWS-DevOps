@@ -3,7 +3,9 @@ import { motion } from 'framer-motion';
 export default function FiltersTab({
     genres,
     selectedGenres,
+    showAdult,
     onGenreToggle,
+    onToggleAdult,
     onClearFilters,
     user,
     profile,
@@ -47,6 +49,49 @@ export default function FiltersTab({
                     <button className="logout-btn" onClick={onLogout}>
                         🚪 Sair
                     </button>
+                </div>
+            </div>
+
+            {/* Content Preferences */}
+            <div className="preferences-section" style={{ marginBottom: '24px' }}>
+                <h3>Preferências de Conteúdo</h3>
+                <div
+                    className={`preference-toggle ${showAdult ? 'active' : ''}`}
+                    onClick={onToggleAdult}
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        padding: '16px',
+                        background: 'var(--bg-card)',
+                        borderRadius: 'var(--border-radius-md)',
+                        cursor: 'pointer',
+                        marginTop: '12px',
+                        border: showAdult ? '1px solid var(--accent-primary)' : '1px solid transparent'
+                    }}
+                >
+                    <div className="toggle-checkbox" style={{
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '6px',
+                        border: '2px solid var(--text-muted)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: showAdult ? 'var(--accent-primary)' : 'transparent',
+                        borderColor: showAdult ? 'var(--accent-primary)' : 'var(--text-muted)',
+                        transition: 'all 0.2s'
+                    }}>
+                        {showAdult && <span style={{ color: 'white', fontSize: '14px' }}>✓</span>}
+                    </div>
+                    <div className="toggle-info">
+                        <div className="toggle-label" style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+                            🔞 Conteúdo Adulto (+18)
+                        </div>
+                        <div className="toggle-desc" style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                            Habilita jogos com tags Nudity e Sexual Content
+                        </div>
+                    </div>
                 </div>
             </div>
 

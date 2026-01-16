@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gameswipe-v11-adult-filter';
+const CACHE_NAME = 'gameswipe-v12-adult-filter-fix';
 const ASSETS = [
     '/',
     '/index.html',

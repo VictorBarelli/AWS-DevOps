@@ -989,6 +989,44 @@ body {
   z-index: 100;
 }
 
+/* Undo Button */
+.undo-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.undo-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+}
+
+.undo-btn:active {
+  transform: scale(0.95);
+}
+
+/* Likes Tab - Scrollable */
+.tab-content.likes-tab {
+  height: calc(100vh - 70px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 20px;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -1216,6 +1254,7 @@ body {
   justify-content: center;
   opacity: 0;
   transition: all 0.2s ease;
+  z-index: 20;
 }
 
 .like-card:hover .remove-btn {
@@ -1593,7 +1632,7 @@ body {
   content: '⭐';
   position: absolute;
   top: 8px;
-  right: 8px;
+  left: 8px;
   font-size: 20px;
   z-index: 10;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));

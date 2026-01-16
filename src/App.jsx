@@ -49,6 +49,7 @@ export default function App() {
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
+    const [lastSwipedGame, setLastSwipedGame] = useState(null);
 
     // Check for existing session on mount
     useEffect(() => {
@@ -274,6 +275,9 @@ export default function App() {
 
     // Handle swipe
     const handleSwipe = async (direction, game) => {
+        // Save for undo
+        setLastSwipedGame({ game, direction, wasMatch: direction === 'right' });
+
         setSeenIds(prev => new Set([...prev, game.id]));
 
         if (direction === 'right') {
@@ -305,6 +309,31 @@ export default function App() {
         const currentGame = games[currentIndex];
         if (currentGame) {
             handleSwipe(direction, currentGame);
+        }
+    };
+
+    // Handle undo - go back to previous game
+    const handleUndo = () => {
+        if (lastSwipedGame && currentIndex > 0) {
+            const { game, wasMatch } = lastSwipedGame;
+
+            // Go back one card
+            setCurrentIndex(prev => prev - 1);
+
+            // Remove from seen
+            setSeenIds(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(game.id);
+                return newSet;
+            });
+
+            // Remove from matches if it was a like
+            if (wasMatch) {
+                setMatches(prev => prev.filter(m => m.id !== game.id));
+            }
+
+            // Clear last swiped
+            setLastSwipedGame(null);
         }
     };
 
@@ -446,6 +475,8 @@ export default function App() {
                                 onRefresh={handleRefresh}
                                 onButtonSwipe={handleButtonSwipe}
                                 onSuperLike={handleSuperLike}
+                                onUndo={handleUndo}
+                                canUndo={!!lastSwipedGame && currentIndex > 0}
                             />
                         )}
 

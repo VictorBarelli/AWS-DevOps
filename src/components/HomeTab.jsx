@@ -8,7 +8,9 @@ export default function HomeTab({
     onCardClick,
     onRefresh,
     onButtonSwipe,
-    onSuperLike
+    onSuperLike,
+    onUndo,
+    canUndo
 }) {
     if (loading) {
         return (
@@ -37,6 +39,17 @@ export default function HomeTab({
 
     return (
         <div className="tab-content home-tab">
+            {/* Undo Button */}
+            {canUndo && (
+                <button
+                    className="undo-btn"
+                    onClick={onUndo}
+                    title="Voltar"
+                >
+                    ↩
+                </button>
+            )}
+
             <div className="card-container">
                 <AnimatePresence>
                     {currentCards.map((game, i) => (

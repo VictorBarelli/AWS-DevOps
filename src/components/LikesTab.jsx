@@ -24,7 +24,7 @@ export default function LikesTab({ matches, onRemoveMatch, onMatchClick }) {
                 {matches.map((game, index) => (
                     <motion.div
                         key={game.id}
-                        className="like-card"
+                        className={`like-card ${game.superLiked ? 'super-liked' : ''}`}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.05 }}

@@ -36,6 +36,7 @@ export default function App() {
     const [showAdmin, setShowAdmin] = useState(false);
     const [showOnboarding, setShowOnboarding] = useState(false);
     const [selectedGameId, setSelectedGameId] = useState(null);
+    const [showConfetti, setShowConfetti] = useState(false);
     const [activeTab, setActiveTab] = useState('home'); // 'home' | 'likes' | 'filters'
 
     // Game State
@@ -310,8 +311,31 @@ export default function App() {
     // Handle super like
     const handleSuperLike = (game) => {
         if (game) {
-            // Super like is essentially a like with extra emphasis
-            handleSwipe('right', game);
+            // Mark as superLiked and add to matches
+            const superLikedGame = { ...game, superLiked: true };
+
+            setSeenIds(prev => new Set([...prev, game.id]));
+            setMatches(prev => {
+                if (prev.some(m => m.id === game.id)) return prev;
+                return [superLikedGame, ...prev];
+            });
+
+            // Show confetti animation
+            setShowConfetti(true);
+            setTimeout(() => setShowConfetti(false), 1500);
+
+            // Save to database if logged in
+            if (session && user?.id !== 'demo') {
+                saveMatch(user.id, superLikedGame).catch(err => {
+                    console.error('Error saving super like:', err);
+                });
+            }
+
+            setCurrentIndex(prev => prev + 1);
+
+            if (games.length - currentIndex < 5) {
+                loadMoreGames();
+            }
         }
     };
 
@@ -397,6 +421,19 @@ export default function App() {
     return (
         <>
             <div className="app tinder-layout">
+                {/* Confetti Animation */}
+                {showConfetti && (
+                    <div className="confetti-overlay">
+                        {[...Array(30)].map((_, i) => (
+                            <div key={i} className="confetti-piece" style={{
+                                left: `${Math.random() * 100}%`,
+                                animationDelay: `${Math.random() * 0.5}s`,
+                                backgroundColor: ['#fbbf24', '#f59e0b', '#fcd34d', '#fef3c7'][Math.floor(Math.random() * 4)]
+                            }} />
+                        ))}
+                    </div>
+                )}
+
                 {/* Main Content Area */}
                 <div className="main-content">
                     <AnimatePresence mode="wait">

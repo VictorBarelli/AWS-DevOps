@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gameswipe-v8-mobile-fix';
+const CACHE_NAME = 'gameswipe-v9-layout-overlap-fix';
 const ASSETS = [
     '/',
     '/index.html',

@@ -61,7 +61,7 @@ jobs:
           fi
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: success()
         with:
           name: build-${{ github.sha }}

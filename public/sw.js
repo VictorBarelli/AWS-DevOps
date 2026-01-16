@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gameswipe-v5-unified-fix';
+const CACHE_NAME = 'gameswipe-v6-login-design';
 const ASSETS = [
     '/',
     '/index.html',

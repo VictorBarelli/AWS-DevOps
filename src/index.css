@@ -76,13 +76,14 @@ body {
   font-family: var(--font-family);
   background: var(--bg-primary);
   color: var(--text-primary);
-  min-height: 100vh;
+  height: 100vh;
   line-height: 1.5;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 #root {
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 /* ==========================================
@@ -90,16 +91,17 @@ body {
    ========================================== */
 
 .app {
-  display: block;
-  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
   padding: 0;
-  padding-bottom: 90px;
   position: relative;
   max-width: 600px;
   margin: 0 auto;
   border-left: 1px solid var(--border-color);
   border-right: 1px solid var(--border-color);
   background: var(--bg-primary);
+  overflow: hidden;
 }
 
 /* On large screens, center content */

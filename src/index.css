@@ -961,11 +961,8 @@ body {
 /* Main Content Area */
 .main-content {
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   position: relative;
-  padding-bottom: 80px;
-  /* Space for tab navigation */
 }
 
 /* Tab Content Wrapper */

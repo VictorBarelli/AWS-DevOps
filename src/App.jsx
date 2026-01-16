@@ -45,6 +45,7 @@ export default function App() {
     const [genres, setGenres] = useState([]);
     const [selectedGenres, setSelectedGenres] = useState([]);
     const [showAdult, setShowAdult] = useState(false);
+    const [releaseYear, setReleaseYear] = useState(''); // 'YYYY-MM-DD,YYYY-MM-DD'
     const [matches, setMatches] = useState([]);
     const [seenIds, setSeenIds] = useState(new Set());
     const [loading, setLoading] = useState(true);
@@ -240,6 +241,7 @@ export default function App() {
             page: 1,
             genres: selectedGenres.join(','),
             adult: showAdult,
+            dates: releaseYear,
             pageSize: 20
         })
             .then(data => {
@@ -252,7 +254,7 @@ export default function App() {
                 console.error(err);
                 setLoading(false);
             });
-    }, [selectedGenres, user, showAdult]);
+    }, [selectedGenres, user, showAdult, releaseYear]);
 
     // Load more games
     const loadMoreGames = useCallback(async () => {
@@ -264,6 +266,7 @@ export default function App() {
                 page: nextPage,
                 genres: selectedGenres.join(','),
                 adult: showAdult,
+                dates: releaseYear,
                 pageSize: 20
             });
 
@@ -274,7 +277,7 @@ export default function App() {
         } catch (err) {
             console.error(err);
         }
-    }, [page, hasMore, loading, selectedGenres, seenIds, showAdult]);
+    }, [page, hasMore, loading, selectedGenres, seenIds, showAdult, releaseYear]);
 
     // Handle swipe
     const handleSwipe = async (direction, game) => {
@@ -383,6 +386,7 @@ export default function App() {
     // Clear filters
     const handleClearFilters = () => {
         setSelectedGenres([]);
+        setReleaseYear('');
     };
 
     // Remove match
@@ -405,10 +409,20 @@ export default function App() {
         localStorage.removeItem(STORAGE_KEYS.SEEN);
 
         setLoading(true);
+        // Reset all filters and states related to game fetching
+        setMatches([]);
+        setSeenIds(new Set());
+        setSelectedGenres([]);
+        setShowAdult(false);
+        setReleaseYear(''); // Reset releaseYear
+        setPage(1);
+        setHasMore(true); // Reset hasMore to true to allow initial fetch
+
         fetchGames({
             page: 1,
             genres: selectedGenres.join(','),
             adult: showAdult,
+            dates: releaseYear, // Pass releaseYear to fetchGames
             pageSize: 20
         })
             .then(data => {
@@ -497,8 +511,10 @@ export default function App() {
                                 genres={genres}
                                 selectedGenres={selectedGenres}
                                 showAdult={showAdult}
+                                releaseYear={releaseYear}
                                 onGenreToggle={handleGenreChange}
                                 onToggleAdult={() => setShowAdult(!showAdult)}
+                                onReleaseYearChange={setReleaseYear}
                                 onClearFilters={handleClearFilters}
                                 user={user}
                                 profile={profile}

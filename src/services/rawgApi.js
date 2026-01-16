@@ -41,7 +41,8 @@ export async function fetchGames({
     genres = '',
     ordering = '',
     search = '',
-    adult = false
+    adult = false,
+    dates = null
 } = {}) {
     try {
         const params = {
@@ -52,6 +53,11 @@ export async function fetchGames({
         // Add genres filter if provided
         if (genres && genres.length > 0) {
             params.genres = genres;
+        }
+
+        // Add dates filter if provided
+        if (dates) {
+            params.dates = dates;
         }
 
         // Add adult tags if enabled

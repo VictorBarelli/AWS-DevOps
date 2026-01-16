@@ -4,8 +4,10 @@ export default function FiltersTab({
     genres,
     selectedGenres,
     showAdult,
+    releaseYear,
     onGenreToggle,
     onToggleAdult,
+    onReleaseYearChange,
     onClearFilters,
     user,
     profile,
@@ -92,6 +94,40 @@ export default function FiltersTab({
                             Habilita jogos com tags Nudity e Sexual Content
                         </div>
                     </div>
+                </div>
+            </div>
+
+            {/* Year Filter */}
+            <div className="year-section" style={{ marginBottom: '24px' }}>
+                <h3>Ano de Lançamento</h3>
+                <div className="year-options" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {[
+                        { label: 'Todos', value: '' },
+                        { label: '2025', value: '2025-01-01,2025-12-31' },
+                        { label: '2024', value: '2024-01-01,2024-12-31' },
+                        { label: '2023', value: '2023-01-01,2023-12-31' },
+                        { label: '2020-22', value: '2020-01-01,2022-12-31' },
+                        { label: 'Anos 2010', value: '2010-01-01,2019-12-31' },
+                        { label: 'Anos 2000', value: '2000-01-01,2009-12-31' },
+                        { label: 'Retrô', value: '1950-01-01,1999-12-31' }
+                    ].map(opt => (
+                        <button
+                            key={opt.label}
+                            onClick={() => onReleaseYearChange(opt.value)}
+                            style={{
+                                padding: '8px 12px',
+                                borderRadius: '20px',
+                                border: '1px solid var(--border-color)',
+                                background: releaseYear === opt.value ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)',
+                                color: releaseYear === opt.value ? 'white' : 'var(--text-secondary)',
+                                fontSize: '0.85rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                            }}
+                        >
+                            {opt.label}
+                        </button>
+                    ))}
                 </div>
             </div>
 

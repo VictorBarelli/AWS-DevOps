@@ -307,6 +307,14 @@ export default function App() {
         }
     };
 
+    // Handle super like
+    const handleSuperLike = (game) => {
+        if (game) {
+            // Super like is essentially a like with extra emphasis
+            handleSwipe('right', game);
+        }
+    };
+
     // Handle genre toggle
     const handleGenreChange = (slug) => {
         setSelectedGenres(prev =>
@@ -400,6 +408,7 @@ export default function App() {
                                 onCardClick={setSelectedGameId}
                                 onRefresh={handleRefresh}
                                 onButtonSwipe={handleButtonSwipe}
+                                onSuperLike={handleSuperLike}
                             />
                         )}
 

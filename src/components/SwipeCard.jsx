@@ -80,7 +80,7 @@ export default function SwipeCard({ game, onSwipe, isTop, onCardClick }) {
             </motion.div>
 
             {/* Game Image */}
-            {!imageError ? (
+            {!imageError && game.image ? (
                 <img
                     src={game.image}
                     alt={game.name}

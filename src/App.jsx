@@ -44,6 +44,7 @@ export default function App() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [genres, setGenres] = useState([]);
     const [selectedGenres, setSelectedGenres] = useState([]);
+    const [showAdult, setShowAdult] = useState(false);
     const [matches, setMatches] = useState([]);
     const [seenIds, setSeenIds] = useState(new Set());
     const [loading, setLoading] = useState(true);
@@ -238,6 +239,7 @@ export default function App() {
         fetchGames({
             page: 1,
             genres: selectedGenres.join(','),
+            adult: showAdult,
             pageSize: 20
         })
             .then(data => {
@@ -250,7 +252,7 @@ export default function App() {
                 console.error(err);
                 setLoading(false);
             });
-    }, [selectedGenres, user]);
+    }, [selectedGenres, user, showAdult]);
 
     // Load more games
     const loadMoreGames = useCallback(async () => {
@@ -261,6 +263,7 @@ export default function App() {
             const data = await fetchGames({
                 page: nextPage,
                 genres: selectedGenres.join(','),
+                adult: showAdult,
                 pageSize: 20
             });
 
@@ -271,7 +274,7 @@ export default function App() {
         } catch (err) {
             console.error(err);
         }
-    }, [page, hasMore, loading, selectedGenres, seenIds]);
+    }, [page, hasMore, loading, selectedGenres, seenIds, showAdult]);
 
     // Handle swipe
     const handleSwipe = async (direction, game) => {
@@ -405,6 +408,7 @@ export default function App() {
         fetchGames({
             page: 1,
             genres: selectedGenres.join(','),
+            adult: showAdult,
             pageSize: 20
         })
             .then(data => {
@@ -492,7 +496,9 @@ export default function App() {
                             <FiltersTab
                                 genres={genres}
                                 selectedGenres={selectedGenres}
+                                showAdult={showAdult}
                                 onGenreToggle={handleGenreChange}
+                                onToggleAdult={() => setShowAdult(!showAdult)}
                                 onClearFilters={handleClearFilters}
                                 user={user}
                                 profile={profile}

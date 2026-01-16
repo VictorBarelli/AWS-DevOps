@@ -4,7 +4,7 @@ const API_KEY = import.meta.env.VITE_RAWG_API_KEY;
 const BASE_URL = 'https://api.rawg.io/api';
 
 if (!API_KEY) {
-  console.warn('RAWG API key is missing. Please check your .env file.');
+    console.warn('RAWG API key is missing. Please check your .env file.');
 }
 
 const api = axios.create({
@@ -40,7 +40,8 @@ export async function fetchGames({
     pageSize = 20,
     genres = '',
     ordering = '',
-    search = ''
+    search = '',
+    adult = false
 } = {}) {
     try {
         const params = {
@@ -51,6 +52,13 @@ export async function fetchGames({
         // Add genres filter if provided
         if (genres && genres.length > 0) {
             params.genres = genres;
+        }
+
+        // Add adult tags if enabled
+        if (adult) {
+            // RAWG uses tags for adult content. Common tags: nudity, sexual-content, hentai
+            // Note: This filters FOR games with these tags.
+            params.tags = 'nudity,sexual-content,hentai';
         }
 
         // Use random page offset for variety

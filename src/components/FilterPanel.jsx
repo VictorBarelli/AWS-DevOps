@@ -1,7 +1,9 @@
 export default function FilterPanel({
     genres,
     selectedGenres,
+    showAdult,
     onGenreChange,
+    onToggleAdult,
     onClearFilters,
     user,
     onLogout,
@@ -38,6 +40,21 @@ export default function FilterPanel({
                     </div>
                 </div>
             )}
+
+            <div className="filter-section">
+                <h3 className="filter-title">Preferências</h3>
+                <div className="filter-options">
+                    <label className={`filter-option ${showAdult ? 'active' : ''}`}>
+                        <input
+                            type="checkbox"
+                            checked={showAdult}
+                            onChange={onToggleAdult}
+                        />
+                        <span className="filter-checkbox"></span>
+                        <span className="filter-label">🔞 Conteúdo Adulto (+18)</span>
+                    </label>
+                </div>
+            </div>
 
             {/* Genres Filter */}
             <div className="filter-section">

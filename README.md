@@ -2,6 +2,10 @@
 
 > Aplicação de descoberta de jogos estilo Tinder, com infraestrutura completa na AWS
 
+[![CI](https://github.com/VictorBarelli/AWS-DevOps/actions/workflows/ci.yml/badge.svg)](https://github.com/VictorBarelli/AWS-DevOps/actions/workflows/ci.yml)
+[![Deploy Production](https://github.com/VictorBarelli/AWS-DevOps/actions/workflows/deploy-production.yml/badge.svg)](https://github.com/VictorBarelli/AWS-DevOps/actions/workflows/deploy-production.yml)
+[![Deploy Staging](https://github.com/VictorBarelli/AWS-DevOps/actions/workflows/deploy-staging.yml/badge.svg)](https://github.com/VictorBarelli/AWS-DevOps/actions/workflows/deploy-staging.yml)
+
 [![React](https://img.shields.io/badge/React-18.2-61dafb?logo=react)](https://react.dev)
 [![Terraform](https://img.shields.io/badge/Terraform-1.0+-7b42bc?logo=terraform)](https://terraform.io)
 [![AWS](https://img.shields.io/badge/AWS-Cloud-ff9900?logo=amazon-aws)](https://aws.amazon.com)
@@ -98,8 +102,25 @@ cd AWS-DevOps
 # Instalar dependências
 npm install
 
+# Configurar variáveis de ambiente
+cp .env.example .env
+# Edite o arquivo .env com suas credenciais
+
 # Rodar em desenvolvimento
 npm run dev
+```
+
+### Scripts Disponíveis
+
+```bash
+npm run dev          # Inicia servidor de desenvolvimento
+npm run build        # Build de produção
+npm run preview      # Preview do build
+npm run lint         # Verifica problemas de código
+npm run lint:fix     # Corrige problemas automaticamente
+npm run format       # Formata código com Prettier
+npm run test         # Executa testes
+npm run test:watch   # Executa testes em modo watch
 ```
 
 ## Deploy

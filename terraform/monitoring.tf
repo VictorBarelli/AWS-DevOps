@@ -1,8 +1,3 @@
-# ==========================================
-# CloudWatch Monitoring & Observability
-# ==========================================
-
-# S3 Bucket for CloudFront Access Logs
 resource "aws_s3_bucket" "logs" {
   bucket = "${var.project_name}-${var.environment}-logs"
 
@@ -11,7 +6,6 @@ resource "aws_s3_bucket" "logs" {
   }
 }
 
-# Lifecycle policy to delete old logs
 resource "aws_s3_bucket_lifecycle_configuration" "logs" {
   bucket = aws_s3_bucket.logs.id
 
@@ -29,7 +23,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "logs" {
   }
 }
 
-# Block public access for logs bucket
 resource "aws_s3_bucket_public_access_block" "logs" {
   bucket = aws_s3_bucket.logs.id
 
@@ -39,7 +32,6 @@ resource "aws_s3_bucket_public_access_block" "logs" {
   restrict_public_buckets = true
 }
 
-# Bucket ownership controls for CloudFront
 resource "aws_s3_bucket_ownership_controls" "logs" {
   bucket = aws_s3_bucket.logs.id
   rule {
@@ -47,23 +39,17 @@ resource "aws_s3_bucket_ownership_controls" "logs" {
   }
 }
 
-# ACL for CloudFront to write logs
 resource "aws_s3_bucket_acl" "logs" {
   depends_on = [aws_s3_bucket_ownership_controls.logs]
   bucket     = aws_s3_bucket.logs.id
   acl        = "private"
 }
 
-# ==========================================
-# CloudWatch Dashboard
-# ==========================================
-
 resource "aws_cloudwatch_dashboard" "main" {
   dashboard_name = "${var.project_name}-${var.environment}-dashboard"
 
   dashboard_body = jsonencode({
     widgets = [
-      # Row 1: Request Metrics
       {
         type   = "metric"
         x      = 0
@@ -94,7 +80,6 @@ resource "aws_cloudwatch_dashboard" "main" {
           view = "timeSeries"
         }
       },
-      # Row 2: Error Rates
       {
         type   = "metric"
         x      = 0
@@ -107,8 +92,8 @@ resource "aws_cloudwatch_dashboard" "main" {
           metrics = [
             ["AWS/CloudFront", "4xxErrorRate", "DistributionId", aws_cloudfront_distribution.website.id, "Region", "Global", { stat = "Average", period = 300 }]
           ]
-          view   = "timeSeries"
-          yAxis  = { left = { min = 0, max = 100 } }
+          view  = "timeSeries"
+          yAxis = { left = { min = 0, max = 100 } }
         }
       },
       {
@@ -123,8 +108,8 @@ resource "aws_cloudwatch_dashboard" "main" {
           metrics = [
             ["AWS/CloudFront", "5xxErrorRate", "DistributionId", aws_cloudfront_distribution.website.id, "Region", "Global", { stat = "Average", period = 300 }]
           ]
-          view   = "timeSeries"
-          yAxis  = { left = { min = 0, max = 100 } }
+          view  = "timeSeries"
+          yAxis = { left = { min = 0, max = 100 } }
           annotations = {
             horizontal = [
               { label = "Critical", value = 5, color = "#ff0000" }
@@ -144,11 +129,10 @@ resource "aws_cloudwatch_dashboard" "main" {
           metrics = [
             ["AWS/CloudFront", "CacheHitRate", "DistributionId", aws_cloudfront_distribution.website.id, "Region", "Global", { stat = "Average", period = 300 }]
           ]
-          view   = "timeSeries"
-          yAxis  = { left = { min = 0, max = 100 } }
+          view  = "timeSeries"
+          yAxis = { left = { min = 0, max = 100 } }
         }
       },
-      # Row 3: S3 Metrics
       {
         type   = "metric"
         x      = 0
@@ -179,7 +163,6 @@ resource "aws_cloudwatch_dashboard" "main" {
           view = "singleValue"
         }
       },
-      # Row 4: Summary
       {
         type   = "text"
         x      = 0
@@ -194,11 +177,6 @@ resource "aws_cloudwatch_dashboard" "main" {
   })
 }
 
-# ==========================================
-# CloudWatch Alarms
-# ==========================================
-
-# SNS Topic for Alerts
 resource "aws_sns_topic" "alerts" {
   name = "${var.project_name}-${var.environment}-alerts"
 
@@ -207,14 +185,6 @@ resource "aws_sns_topic" "alerts" {
   }
 }
 
-# Email subscription (optional - can be configured manually)
-# resource "aws_sns_topic_subscription" "email" {
-#   topic_arn = aws_sns_topic.alerts.arn
-#   protocol  = "email"
-#   endpoint  = var.alert_email
-# }
-
-# Alarm: High 5xx Error Rate
 resource "aws_cloudwatch_metric_alarm" "high_5xx_errors" {
   alarm_name          = "${var.project_name}-${var.environment}-high-5xx-errors"
   comparison_operator = "GreaterThanThreshold"
@@ -240,7 +210,6 @@ resource "aws_cloudwatch_metric_alarm" "high_5xx_errors" {
   }
 }
 
-# Alarm: High 4xx Error Rate
 resource "aws_cloudwatch_metric_alarm" "high_4xx_errors" {
   alarm_name          = "${var.project_name}-${var.environment}-high-4xx-errors"
   comparison_operator = "GreaterThanThreshold"
@@ -265,7 +234,6 @@ resource "aws_cloudwatch_metric_alarm" "high_4xx_errors" {
   }
 }
 
-# Alarm: Low Cache Hit Rate
 resource "aws_cloudwatch_metric_alarm" "low_cache_hit_rate" {
   alarm_name          = "${var.project_name}-${var.environment}-low-cache-hit-rate"
   comparison_operator = "LessThanThreshold"
@@ -290,7 +258,6 @@ resource "aws_cloudwatch_metric_alarm" "low_cache_hit_rate" {
   }
 }
 
-# Alarm: Traffic Spike (unusual high requests)
 resource "aws_cloudwatch_metric_alarm" "traffic_spike" {
   alarm_name          = "${var.project_name}-${var.environment}-traffic-spike"
   comparison_operator = "GreaterThanThreshold"
@@ -299,7 +266,7 @@ resource "aws_cloudwatch_metric_alarm" "traffic_spike" {
   namespace           = "AWS/CloudFront"
   period              = 300
   statistic           = "Sum"
-  threshold           = 10000  # Adjust based on normal traffic
+  threshold           = 10000
   alarm_description   = "Unusual spike in traffic detected"
   treat_missing_data  = "notBreaching"
 

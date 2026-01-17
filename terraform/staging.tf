@@ -1,9 +1,3 @@
-# ==========================================
-# Staging Environment
-# S3 + CloudFront for testing
-# ==========================================
-
-# S3 Bucket for Staging
 resource "aws_s3_bucket" "staging" {
   bucket = "${var.project_name}-staging-website"
 
@@ -13,7 +7,6 @@ resource "aws_s3_bucket" "staging" {
   }
 }
 
-# Bucket versioning
 resource "aws_s3_bucket_versioning" "staging" {
   bucket = aws_s3_bucket.staging.id
   versioning_configuration {
@@ -21,7 +14,6 @@ resource "aws_s3_bucket_versioning" "staging" {
   }
 }
 
-# Block public access
 resource "aws_s3_bucket_public_access_block" "staging" {
   bucket = aws_s3_bucket.staging.id
 
@@ -31,7 +23,6 @@ resource "aws_s3_bucket_public_access_block" "staging" {
   restrict_public_buckets = true
 }
 
-# Website configuration
 resource "aws_s3_bucket_website_configuration" "staging" {
   bucket = aws_s3_bucket.staging.id
 
@@ -44,7 +35,6 @@ resource "aws_s3_bucket_website_configuration" "staging" {
   }
 }
 
-# CORS configuration
 resource "aws_s3_bucket_cors_configuration" "staging" {
   bucket = aws_s3_bucket.staging.id
 
@@ -56,7 +46,6 @@ resource "aws_s3_bucket_cors_configuration" "staging" {
   }
 }
 
-# Origin Access Control for Staging
 resource "aws_cloudfront_origin_access_control" "staging" {
   name                              = "${var.project_name}-staging-oac"
   description                       = "OAC for GameSwipe Staging"
@@ -65,7 +54,6 @@ resource "aws_cloudfront_origin_access_control" "staging" {
   signing_protocol                  = "sigv4"
 }
 
-# CloudFront Distribution for Staging
 resource "aws_cloudfront_distribution" "staging" {
   enabled             = true
   is_ipv6_enabled     = true
@@ -93,8 +81,8 @@ resource "aws_cloudfront_distribution" "staging" {
 
     viewer_protocol_policy = "redirect-to-https"
     min_ttl                = 0
-    default_ttl            = 300    # 5 minutes (shorter for staging)
-    max_ttl                = 3600   # 1 hour
+    default_ttl            = 300
+    max_ttl                = 3600
     compress               = true
   }
 
@@ -126,15 +114,14 @@ resource "aws_cloudfront_distribution" "staging" {
   }
 }
 
-# Bucket policy for CloudFront access
 resource "aws_s3_bucket_policy" "staging" {
   bucket = aws_s3_bucket.staging.id
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Sid       = "AllowCloudFrontAccess"
-        Effect    = "Allow"
+        Sid    = "AllowCloudFrontAccess"
+        Effect = "Allow"
         Principal = {
           Service = "cloudfront.amazonaws.com"
         }

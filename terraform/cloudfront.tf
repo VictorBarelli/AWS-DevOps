@@ -1,5 +1,3 @@
-# CloudFront CDN
-
 resource "aws_cloudfront_origin_access_control" "website" {
   name                              = "${var.project_name}-oac"
   description                       = "OAC for S3"
@@ -54,7 +52,6 @@ resource "aws_cloudfront_distribution" "website" {
     }
   }
 
-  # SPA routing
   custom_error_response {
     error_code         = 404
     response_code      = 200

@@ -1,5 +1,3 @@
-# Production S3 bucket
-
 resource "aws_s3_bucket" "website" {
   bucket = "${var.project_name}-${var.environment}-website"
   tags   = { Name = "GameSwipe Website" }

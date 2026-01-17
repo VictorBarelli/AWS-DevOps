@@ -1,7 +1,3 @@
-# ==========================================
-# ECR Repository
-# ==========================================
-
 resource "aws_ecr_repository" "app" {
   name                 = "${var.project_name}-app"
   image_tag_mutability = "MUTABLE"
@@ -15,7 +11,6 @@ resource "aws_ecr_repository" "app" {
   }
 }
 
-# Lifecycle policy to keep only recent images
 resource "aws_ecr_lifecycle_policy" "app" {
   repository = aws_ecr_repository.app.name
 
@@ -25,9 +20,9 @@ resource "aws_ecr_lifecycle_policy" "app" {
         rulePriority = 1
         description  = "Keep last 10 images"
         selection = {
-          tagStatus     = "any"
-          countType     = "imageCountMoreThan"
-          countNumber   = 10
+          tagStatus   = "any"
+          countType   = "imageCountMoreThan"
+          countNumber = 10
         }
         action = {
           type = "expire"
@@ -36,10 +31,6 @@ resource "aws_ecr_lifecycle_policy" "app" {
     ]
   })
 }
-
-# ==========================================
-# VPC for ECS
-# ==========================================
 
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
@@ -51,7 +42,6 @@ resource "aws_vpc" "main" {
   }
 }
 
-# Internet Gateway
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
@@ -60,7 +50,6 @@ resource "aws_internet_gateway" "main" {
   }
 }
 
-# Public Subnets
 resource "aws_subnet" "public_1" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.1.0/24"
@@ -83,7 +72,6 @@ resource "aws_subnet" "public_2" {
   }
 }
 
-# Route Table
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
 
@@ -106,10 +94,6 @@ resource "aws_route_table_association" "public_2" {
   subnet_id      = aws_subnet.public_2.id
   route_table_id = aws_route_table.public.id
 }
-
-# ==========================================
-# Security Group for ECS
-# ==========================================
 
 resource "aws_security_group" "ecs" {
   name        = "${var.project_name}-ecs-sg"
@@ -136,10 +120,6 @@ resource "aws_security_group" "ecs" {
   }
 }
 
-# ==========================================
-# ECS Cluster
-# ==========================================
-
 resource "aws_ecs_cluster" "main" {
   name = "${var.project_name}-cluster"
 
@@ -153,7 +133,6 @@ resource "aws_ecs_cluster" "main" {
   }
 }
 
-# ECS Cluster Capacity Providers
 resource "aws_ecs_cluster_capacity_providers" "main" {
   cluster_name = aws_ecs_cluster.main.name
 
@@ -166,11 +145,6 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
   }
 }
 
-# ==========================================
-# IAM Roles for ECS
-# ==========================================
-
-# Task Execution Role
 resource "aws_iam_role" "ecs_execution" {
   name = "${var.project_name}-ecs-execution-role"
 
@@ -197,7 +171,6 @@ resource "aws_iam_role_policy_attachment" "ecs_execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-# Task Role
 resource "aws_iam_role" "ecs_task" {
   name = "${var.project_name}-ecs-task-role"
 
@@ -218,10 +191,6 @@ resource "aws_iam_role" "ecs_task" {
     Name = "ECS Task Role"
   }
 }
-
-# ==========================================
-# Application Load Balancer
-# ==========================================
 
 resource "aws_lb" "main" {
   name               = "${var.project_name}-alb"
@@ -270,10 +239,6 @@ resource "aws_lb_listener" "http" {
   }
 }
 
-# ==========================================
-# ECS Task Definition
-# ==========================================
-
 resource "aws_ecs_task_definition" "app" {
   family                   = "${var.project_name}-app"
   network_mode             = "awsvpc"
@@ -321,10 +286,6 @@ resource "aws_ecs_task_definition" "app" {
     Name = "GameSwipe Task Definition"
   }
 }
-
-# ==========================================
-# ECS Service
-# ==========================================
 
 resource "aws_ecs_service" "app" {
   name            = "${var.project_name}-service"

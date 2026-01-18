@@ -1670,3 +1670,30 @@ body {
   z-index: 10;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
 }
+
+/* ==========================================
+   SCROLLABLE TAB CONTENT (Mobile)
+   ========================================== */
+
+.tab-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--spacing-lg);
+  padding-bottom: calc(100px + env(safe-area-inset-bottom));
+}
+
+.tab-content.likes-tab,
+.tab-content.filters-tab {
+  height: calc(100dvh - 80px);
+  overscroll-behavior: contain;
+}
+
+.tab-content.home-tab {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-md);
+  padding-bottom: calc(100px + env(safe-area-inset-bottom));
+}

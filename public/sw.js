@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gameswipe-v13-year-filter';
+const CACHE_NAME = 'gameswipe-v14-mobile-verify';
 const ASSETS = [
     '/',
     '/index.html',

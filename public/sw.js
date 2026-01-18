@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gameswipe-v15-scroll-fix';
+const CACHE_NAME = 'gameswipe-v16-login-scroll';
 const ASSETS = [
     '/',
     '/index.html',

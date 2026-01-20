@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { signIn, signUp, signInWithGoogle } from '../services/supabase';
+import cognitoAuth from '../services/cognitoAuth';
 
 export default function LoginPage({ onLogin }) {
     const [isLogin, setIsLogin] = useState(true);
@@ -11,6 +11,41 @@ export default function LoginPage({ onLogin }) {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [needsConfirmation, setNeedsConfirmation] = useState(false);
+    const [confirmationCode, setConfirmationCode] = useState('');
+
+    // Handle OAuth callback on mount
+    useEffect(() => {
+        const handleCallback = async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('code')) {
+                setLoading(true);
+                try {
+                    const tokens = await cognitoAuth.handleOAuthCallback();
+                    if (tokens && tokens.id_token) {
+                        // Store tokens and get user info
+                        localStorage.setItem('id_token', tokens.id_token);
+                        localStorage.setItem('access_token', tokens.access_token);
+                        localStorage.setItem('refresh_token', tokens.refresh_token);
+
+                        // Decode JWT to get user info
+                        const payload = JSON.parse(atob(tokens.id_token.split('.')[1]));
+                        const user = {
+                            id: payload.sub,
+                            email: payload.email,
+                            user_metadata: { name: payload.name || payload.email }
+                        };
+                        onLogin(user, tokens);
+                    }
+                } catch (err) {
+                    console.error('OAuth callback error:', err);
+                    setError('Erro ao fazer login com Google');
+                }
+                setLoading(false);
+            }
+        };
+        handleCallback();
+    }, [onLogin]);
 
     const handleChange = (e) => {
         setFormData({
@@ -38,60 +73,79 @@ export default function LoginPage({ onLogin }) {
             return;
         }
 
-        if (formData.password.length < 6) {
-            setError('A senha deve ter pelo menos 6 caracteres');
+        if (formData.password.length < 8) {
+            setError('A senha deve ter pelo menos 8 caracteres');
             setLoading(false);
             return;
         }
 
         try {
             if (isLogin) {
-                // Sign in
-                const { user, session } = await signIn(formData.email, formData.password);
+                // Sign in with Cognito
+                const session = await cognitoAuth.signIn(formData.email, formData.password);
+                const userInfo = await cognitoAuth.getUserInfo();
+                const user = {
+                    id: session.getIdToken().payload.sub,
+                    email: userInfo.email,
+                    user_metadata: { name: userInfo.name || userInfo.email }
+                };
                 onLogin(user, session);
             } else {
-                // Sign up
-                const { user, session } = await signUp(formData.email, formData.password, formData.name);
-
-                if (!session) {
-                    // Email confirmation required
-                    setError('Verifique seu email para confirmar o cadastro');
-                    setLoading(false);
-                    return;
-                }
-
-                onLogin(user, session);
+                // Sign up with Cognito
+                await cognitoAuth.signUp(formData.email, formData.password, formData.name);
+                setNeedsConfirmation(true);
+                setError('');
             }
         } catch (err) {
             console.error('Auth error:', err);
 
             // Translate common errors
-            if (err.message.includes('Invalid login credentials')) {
+            if (err.message?.includes('Incorrect username or password')) {
                 setError('Email ou senha incorretos');
-            } else if (err.message.includes('User already registered')) {
+            } else if (err.message?.includes('User already exists')) {
                 setError('Este email já está cadastrado');
-            } else if (err.message.includes('Email not confirmed')) {
-                setError('Confirme seu email antes de fazer login');
+            } else if (err.message?.includes('User is not confirmed')) {
+                setNeedsConfirmation(true);
+            } else if (err.code === 'NewPasswordRequired') {
+                setError('É necessário definir uma nova senha');
             } else {
                 setError(err.message || 'Erro ao autenticar');
             }
-
-            setLoading(false);
         }
+        setLoading(false);
     };
 
-    const handleGoogleLogin = async () => {
+    const handleConfirmation = async (e) => {
+        e.preventDefault();
         setLoading(true);
         setError('');
 
         try {
-            await signInWithGoogle();
-            // Supabase will redirect to Google and back
+            await cognitoAuth.confirmSignUp(formData.email, confirmationCode);
+            // After confirmation, sign in
+            const session = await cognitoAuth.signIn(formData.email, formData.password);
+            const userInfo = await cognitoAuth.getUserInfo();
+            const user = {
+                id: session.getIdToken().payload.sub,
+                email: userInfo.email,
+                user_metadata: { name: userInfo.name || userInfo.email }
+            };
+            onLogin(user, session);
         } catch (err) {
-            console.error('Google auth error:', err);
-            setError('Erro ao conectar com Google');
-            setLoading(false);
+            console.error('Confirmation error:', err);
+            if (err.message?.includes('Invalid verification code')) {
+                setError('Código inválido');
+            } else {
+                setError(err.message || 'Erro ao confirmar');
+            }
         }
+        setLoading(false);
+    };
+
+    const handleGoogleLogin = () => {
+        setLoading(true);
+        setError('');
+        cognitoAuth.signInWithGoogle();
     };
 
     const handleDemoAccess = () => {
@@ -103,6 +157,74 @@ export default function LoginPage({ onLogin }) {
         };
         onLogin(demoUser, null);
     };
+
+    // Confirmation code form
+    if (needsConfirmation) {
+        return (
+            <div className="login-page">
+                <div className="login-bg-decoration"></div>
+                <motion.div
+                    className="login-container"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <div className="login-logo">
+                        <span className="logo-icon">📧</span>
+                        <span className="logo-text">Confirmar Email</span>
+                    </div>
+
+                    <p className="login-subtitle">
+                        Digite o código enviado para {formData.email}
+                    </p>
+
+                    <form onSubmit={handleConfirmation} className="login-form">
+                        <div className="form-group">
+                            <label htmlFor="code">Código de verificação</label>
+                            <input
+                                type="text"
+                                id="code"
+                                name="code"
+                                placeholder="123456"
+                                value={confirmationCode}
+                                onChange={(e) => setConfirmationCode(e.target.value)}
+                                autoComplete="one-time-code"
+                            />
+                        </div>
+
+                        {error && (
+                            <motion.div
+                                className="form-error"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                            >
+                                {error}
+                            </motion.div>
+                        )}
+
+                        <button
+                            type="submit"
+                            className="login-btn"
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <span className="btn-loading"></span>
+                            ) : (
+                                'Confirmar'
+                            )}
+                        </button>
+                    </form>
+
+                    <button
+                        className="demo-btn"
+                        onClick={() => setNeedsConfirmation(false)}
+                    >
+                        ← Voltar
+                    </button>
+                </motion.div>
+            </div>
+        );
+    }
 
     return (
         <div className="login-page">

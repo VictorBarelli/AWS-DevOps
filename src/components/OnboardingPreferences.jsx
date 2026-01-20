@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { fetchGenres } from '../services/rawgApi';
-import { supabase } from '../services/supabase';
 
-export default function OnboardingPreferences({ user, onComplete }) {
+export default function OnboardingPreferences({ onComplete }) {
     const [genres, setGenres] = useState([]);
     const [selectedGenres, setSelectedGenres] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -33,25 +32,13 @@ export default function OnboardingPreferences({ user, onComplete }) {
         setSaving(true);
 
         try {
-            // Save preferences to database
-            if (user?.id && user.id !== 'demo') {
-                await supabase
-                    .from('profiles')
-                    .update({
-                        preferences: selectedGenres,
-                        onboarding_complete: true
-                    })
-                    .eq('id', user.id);
-            }
-
-            // Save to localStorage as backup
+            // Save to localStorage
             localStorage.setItem('gameswipe_preferences', JSON.stringify(selectedGenres));
             localStorage.setItem('gameswipe_onboarding_complete', 'true');
 
             onComplete(selectedGenres);
         } catch (err) {
             console.error('Error saving preferences:', err);
-            // Continue anyway with localStorage
             localStorage.setItem('gameswipe_preferences', JSON.stringify(selectedGenres));
             localStorage.setItem('gameswipe_onboarding_complete', 'true');
             onComplete(selectedGenres);

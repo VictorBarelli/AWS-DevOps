@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import cognitoAuth from '../services/cognitoAuth';

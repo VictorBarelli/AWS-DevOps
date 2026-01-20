@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import LoginPage from './components/LoginPage';

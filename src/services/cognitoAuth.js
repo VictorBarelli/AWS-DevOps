@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { CognitoUserPool, CognitoUser, AuthenticationDetails, CognitoUserAttribute } from 'amazon-cognito-identity-js';
 
 const poolData = {

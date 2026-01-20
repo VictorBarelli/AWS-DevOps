@@ -120,6 +120,20 @@ export default function App() {
                             role: 'user'
                         });
 
+                        // Set token for API calls
+                        api.setToken(cognitoSession.getIdToken().getJwtToken());
+
+                        // Fetch real profile from API to get correct role
+                        try {
+                            const userProfile = await api.getCurrentUser();
+                            setProfile(prev => ({
+                                ...prev,
+                                ...userProfile
+                            }));
+                        } catch (e) {
+                            console.error('Error fetching profile:', e);
+                        }
+
                         // Load matches from API
                         try {
                             api.setToken(cognitoSession.getIdToken().getJwtToken());
@@ -161,6 +175,17 @@ export default function App() {
                     name: userData.user_metadata?.name || userData.email?.split('@')[0],
                     role: 'user'
                 });
+
+                // Fetch real profile from API to get correct role
+                try {
+                    const userProfile = await api.getCurrentUser();
+                    setProfile(prev => ({
+                        ...prev,
+                        ...userProfile
+                    }));
+                } catch (e) {
+                    console.error('Error fetching profile in login:', e);
+                }
 
                 // Check if onboarding is complete
                 const onboardingComplete = localStorage.getItem('gameswipe_onboarding_complete') === 'true';

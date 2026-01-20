@@ -1,92 +1,18 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { signIn, signUp, signInWithGoogle } from '../services/supabase';
+import { cognitoAuth } from '../services/cognitoAuth';
 
 export default function LoginPage({ onLogin }) {
-    const [isLogin, setIsLogin] = useState(true);
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-        name: ''
-    });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-        setError('');
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError('');
-
-        // Basic validation
-        if (!formData.email || !formData.password) {
-            setError('Preencha todos os campos');
-            setLoading(false);
-            return;
-        }
-
-        if (!isLogin && !formData.name) {
-            setError('Preencha seu nome');
-            setLoading(false);
-            return;
-        }
-
-        if (formData.password.length < 6) {
-            setError('A senha deve ter pelo menos 6 caracteres');
-            setLoading(false);
-            return;
-        }
-
-        try {
-            if (isLogin) {
-                // Sign in
-                const { user, session } = await signIn(formData.email, formData.password);
-                onLogin(user, session);
-            } else {
-                // Sign up
-                const { user, session } = await signUp(formData.email, formData.password, formData.name);
-
-                if (!session) {
-                    // Email confirmation required
-                    setError('Verifique seu email para confirmar o cadastro');
-                    setLoading(false);
-                    return;
-                }
-
-                onLogin(user, session);
-            }
-        } catch (err) {
-            console.error('Auth error:', err);
-
-            // Translate common errors
-            if (err.message.includes('Invalid login credentials')) {
-                setError('Email ou senha incorretos');
-            } else if (err.message.includes('User already registered')) {
-                setError('Este email já está cadastrado');
-            } else if (err.message.includes('Email not confirmed')) {
-                setError('Confirme seu email antes de fazer login');
-            } else {
-                setError(err.message || 'Erro ao autenticar');
-            }
-
-            setLoading(false);
-        }
-    };
 
     const handleGoogleLogin = async () => {
         setLoading(true);
         setError('');
 
         try {
-            await signInWithGoogle();
-            // Supabase will redirect to Google and back
+            // Redirect to Cognito hosted UI with Google
+            cognitoAuth.signInWithGoogle();
         } catch (err) {
             console.error('Google auth error:', err);
             setError('Erro ao conectar com Google');
@@ -96,12 +22,7 @@ export default function LoginPage({ onLogin }) {
 
     const handleDemoAccess = () => {
         // Demo mode - use localStorage only
-        const demoUser = {
-            id: 'demo',
-            email: 'demo@gameswipe.com',
-            user_metadata: { name: 'Visitante' }
-        };
-        onLogin(demoUser, null);
+        onLogin(null, true);
     };
 
     return (
@@ -137,107 +58,25 @@ export default function LoginPage({ onLogin }) {
                         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                     </svg>
-                    Continuar com Google
+                    {loading ? 'Conectando...' : 'Continuar com Google'}
                 </button>
 
-                {/* Divider */}
-                <div className="login-divider">
-                    <span>ou</span>
-                </div>
-
-                {/* Toggle Login/Register */}
-                <div className="auth-toggle">
-                    <button
-                        className={`auth-toggle-btn ${isLogin ? 'active' : ''}`}
-                        onClick={() => setIsLogin(true)}
+                {error && (
+                    <motion.div
+                        className="form-error"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                     >
-                        Entrar
-                    </button>
-                    <button
-                        className={`auth-toggle-btn ${!isLogin ? 'active' : ''}`}
-                        onClick={() => setIsLogin(false)}
-                    >
-                        Criar conta
-                    </button>
-                </div>
-
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="login-form">
-                    {!isLogin && (
-                        <motion.div
-                            className="form-group"
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                        >
-                            <label htmlFor="name">Nome</label>
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                placeholder="Seu nome"
-                                value={formData.name}
-                                onChange={handleChange}
-                                autoComplete="name"
-                            />
-                        </motion.div>
-                    )}
-
-                    <div className="form-group">
-                        <label htmlFor="email">Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            placeholder="seu@email.com"
-                            value={formData.email}
-                            onChange={handleChange}
-                            autoComplete="email"
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="password">Senha</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            placeholder="••••••••"
-                            value={formData.password}
-                            onChange={handleChange}
-                            autoComplete={isLogin ? 'current-password' : 'new-password'}
-                        />
-                    </div>
-
-                    {error && (
-                        <motion.div
-                            className="form-error"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                        >
-                            {error}
-                        </motion.div>
-                    )}
-
-                    <button
-                        type="submit"
-                        className="login-btn"
-                        disabled={loading}
-                    >
-                        {loading ? (
-                            <span className="btn-loading"></span>
-                        ) : (
-                            isLogin ? 'Entrar' : 'Criar conta'
-                        )}
-                    </button>
-                </form>
+                        {error}
+                    </motion.div>
+                )}
 
                 {/* Demo access */}
                 <button
                     className="demo-btn"
                     onClick={handleDemoAccess}
                 >
-                    Continuar sem conta →
+                    Continuar sem conta
                 </button>
             </motion.div>
 

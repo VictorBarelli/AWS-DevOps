@@ -9,18 +9,10 @@ import HomeTab from './components/HomeTab';
 import LikesTab from './components/LikesTab';
 import FiltersTab from './components/FiltersTab';
 import { fetchGames, fetchGenres } from './services/rawgApi';
-import {
-    supabase,
-    getSession,
-    getUserProfile,
-    signOut,
-    getUserMatches,
-    saveMatch,
-    removeMatch,
-    createOrUpdateProfile
-} from './services/supabase';
+import { cognitoAuth } from './services/cognitoAuth';
+import { api } from './services/api';
 
-// LocalStorage keys (for demo mode)
+// LocalStorage keys
 const STORAGE_KEYS = {
     MATCHES: 'gameswipe_matches',
     FILTERS: 'gameswipe_filters',
@@ -31,12 +23,11 @@ export default function App() {
     // Auth State
     const [user, setUser] = useState(null);
     const [profile, setProfile] = useState(null);
-    const [session, setSession] = useState(null);
     const [authLoading, setAuthLoading] = useState(true);
     const [showAdmin, setShowAdmin] = useState(false);
     const [showOnboarding, setShowOnboarding] = useState(false);
     const [selectedGameId, setSelectedGameId] = useState(null);
-    const [activeTab, setActiveTab] = useState('home'); // 'home' | 'likes' | 'filters'
+    const [activeTab, setActiveTab] = useState('home');
 
     // Game State
     const [games, setGames] = useState([]);
@@ -49,45 +40,57 @@ export default function App() {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
 
-    // Check for existing session on mount
+    // Confetti and Undo state
+    const [showConfetti, setShowConfetti] = useState(false);
+    const [lastSwipedGame, setLastSwipedGame] = useState(null);
+    const [canUndo, setCanUndo] = useState(false);
+
+    // Check for OAuth callback and existing session on mount
     useEffect(() => {
         const initAuth = async () => {
             try {
-                const session = await getSession();
-                if (session?.user) {
-                    setUser(session.user);
-                    setSession(session);
+                // Check for OAuth callback code
+                const code = cognitoAuth.getAuthCodeFromUrl();
+                if (code) {
+                    console.log('Processing OAuth callback...');
+                    await cognitoAuth.exchangeCodeForTokens(code);
+                    cognitoAuth.clearUrlParams();
+                }
 
-                    // Create or get user profile (handles OAuth users)
-                    await createOrUpdateProfile(session.user);
+                // Check for existing token
+                const token = cognitoAuth.getStoredToken();
+                if (token) {
+                    const userData = cognitoAuth.getCurrentUser();
+                    if (userData) {
+                        setUser(userData);
+                        api.setToken(token);
 
-                    // Get user profile with role
-                    let profile;
-                    try {
-                        profile = await getUserProfile(session.user.id);
-                    } catch (e) {
-                        // Profile might not exist yet for OAuth users
-                        console.log('Profile not found, will be created');
-                    }
-                    setProfile(profile);
+                        // Fetch profile from backend API (this also creates user if needed)
+                        try {
+                            const userProfile = await api.getCurrentUser();
+                            setProfile(userProfile);
+                            console.log('User profile loaded:', userProfile);
 
-                    // Check if onboarding needed for new OAuth users
-                    if (!profile?.onboarding_complete && !localStorage.getItem('gameswipe_onboarding_complete')) {
-                        setShowOnboarding(true);
-                    }
+                            // Check if onboarding needed
+                            if (!userProfile?.onboarding_complete && !localStorage.getItem('gameswipe_onboarding_complete')) {
+                                setShowOnboarding(true);
+                            }
 
-                    // Load user's matches from database
-                    try {
-                        const userMatches = await getUserMatches(session.user.id);
-                        setMatches(userMatches.map(m => ({
-                            id: m.game_id,
-                            name: m.game_name,
-                            image: m.game_image,
-                            genres: m.game_genres,
-                            rating: m.game_rating
-                        })));
-                    } catch (e) {
-                        console.log('No matches found');
+                            // Load user's matches from backend
+                            const userMatches = await api.getMatches();
+                            setMatches(userMatches.map(m => ({
+                                id: m.game_id,
+                                name: m.game_name,
+                                image: m.game_image,
+                                genres: m.game_genres,
+                                rating: m.game_rating,
+                                superLiked: m.super_liked
+                            })));
+                        } catch (err) {
+                            console.error('Error loading profile:', err);
+                            // Still allow user to use app with basic profile
+                            setProfile({ name: userData.name, role: 'user' });
+                        }
                     }
                 }
             } catch (err) {
@@ -98,61 +101,15 @@ export default function App() {
         };
 
         initAuth();
-
-        // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            async (event, session) => {
-                if (event === 'SIGNED_OUT') {
-                    setUser(null);
-                    setProfile(null);
-                    setSession(null);
-                    setMatches([]);
-                }
-            }
-        );
-
-        return () => subscription.unsubscribe();
     }, []);
 
-    // Handle login
-    const handleLogin = async (userData, sessionData) => {
-        setUser(userData);
-        setSession(sessionData);
+    // Handle login from LoginPage
+    const handleLogin = async (_userData, isDemo = false) => {
+        if (isDemo) {
+            // Demo mode
+            setUser({ id: 'demo', email: 'demo@example.com', name: 'Visitante' });
+            setProfile({ name: 'Visitante', role: 'user' });
 
-        if (sessionData && userData.id !== 'demo') {
-            try {
-                const profile = await getUserProfile(userData.id);
-                setProfile(profile);
-
-                // Check if onboarding is complete
-                const onboardingComplete = profile?.onboarding_complete ||
-                    localStorage.getItem('gameswipe_onboarding_complete') === 'true';
-
-                if (!onboardingComplete) {
-                    setShowOnboarding(true);
-                } else if (profile?.preferences) {
-                    setSelectedGenres(profile.preferences);
-                }
-
-                // Load matches from database
-                const userMatches = await getUserMatches(userData.id);
-                setMatches(userMatches.map(m => ({
-                    id: m.game_id,
-                    name: m.game_name,
-                    image: m.game_image,
-                    genres: m.game_genres,
-                    rating: m.game_rating
-                })));
-            } catch (err) {
-                console.error('Error loading profile:', err);
-                // Check localStorage for onboarding
-                const onboardingComplete = localStorage.getItem('gameswipe_onboarding_complete') === 'true';
-                if (!onboardingComplete) {
-                    setShowOnboarding(true);
-                }
-            }
-        } else {
-            // Demo mode - check localStorage
             const onboardingComplete = localStorage.getItem('gameswipe_onboarding_complete') === 'true';
             if (!onboardingComplete) {
                 setShowOnboarding(true);
@@ -163,10 +120,9 @@ export default function App() {
 
             const savedMatches = localStorage.getItem(STORAGE_KEYS.MATCHES);
             if (savedMatches) setMatches(JSON.parse(savedMatches));
-            setProfile({
-                name: userData.user_metadata?.name || 'Visitante',
-                role: 'user'
-            });
+        } else {
+            // OAuth login - handled by cognitoAuth
+            cognitoAuth.signInWithGoogle();
         }
     };
 
@@ -178,17 +134,10 @@ export default function App() {
 
     // Handle logout
     const handleLogout = async () => {
-        try {
-            if (session) {
-                await signOut();
-            }
-            setUser(null);
-            setProfile(null);
-            setSession(null);
-            setMatches([]);
-        } catch (err) {
-            console.error('Logout error:', err);
-        }
+        cognitoAuth.signOut();
+        setUser(null);
+        setProfile(null);
+        setMatches([]);
     };
 
     // Load filters from localStorage
@@ -226,7 +175,7 @@ export default function App() {
 
     // Fetch games when filters change
     useEffect(() => {
-        if (!user) return; // Don't fetch if not logged in
+        if (!user) return;
 
         setLoading(true);
         setPage(1);
@@ -239,7 +188,6 @@ export default function App() {
             pageSize: 20
         })
             .then(data => {
-                // Don't filter by seenIds here - let users see all games matching filters
                 setGames(data.games);
                 setHasMore(!!data.next);
                 setLoading(false);
@@ -273,19 +221,31 @@ export default function App() {
 
     // Handle swipe
     const handleSwipe = async (direction, game) => {
+        // Save for undo
+        setLastSwipedGame({ game, direction, index: currentIndex });
+        setCanUndo(true);
+
         setSeenIds(prev => new Set([...prev, game.id]));
 
-        if (direction === 'right') {
+        if (direction === 'right' || direction === 'super') {
+            const superLiked = direction === 'super';
+
+            // Show confetti for super like
+            if (superLiked) {
+                setShowConfetti(true);
+                setTimeout(() => setShowConfetti(false), 2000);
+            }
+
             // Add to matches
             setMatches(prev => {
                 if (prev.some(m => m.id === game.id)) return prev;
-                return [game, ...prev];
+                return [{ ...game, superLiked }, ...prev];
             });
 
-            // Save to database if logged in
-            if (session && user?.id !== 'demo') {
+            // Save to backend if logged in (not demo)
+            if (user?.id !== 'demo') {
                 try {
-                    await saveMatch(user.id, game);
+                    await api.saveMatch(game, superLiked);
                 } catch (err) {
                     console.error('Error saving match:', err);
                 }
@@ -307,6 +267,39 @@ export default function App() {
         }
     };
 
+    // Handle undo
+    const handleUndo = async () => {
+        if (!lastSwipedGame || !canUndo) return;
+
+        const { game, direction } = lastSwipedGame;
+
+        // Remove from seen
+        setSeenIds(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(game.id);
+            return newSet;
+        });
+
+        // If it was a like/super, remove from matches
+        if (direction === 'right' || direction === 'super') {
+            setMatches(prev => prev.filter(m => m.id !== game.id));
+
+            // Remove from backend
+            if (user?.id !== 'demo') {
+                try {
+                    await api.removeMatch(game.id);
+                } catch (err) {
+                    console.error('Error removing match:', err);
+                }
+            }
+        }
+
+        // Go back one card
+        setCurrentIndex(prev => Math.max(0, prev - 1));
+        setCanUndo(false);
+        setLastSwipedGame(null);
+    };
+
     // Handle genre toggle
     const handleGenreChange = (slug) => {
         setSelectedGenres(prev =>
@@ -325,9 +318,9 @@ export default function App() {
     const handleRemoveMatch = async (gameId) => {
         setMatches(prev => prev.filter(m => m.id !== gameId));
 
-        if (session && user?.id !== 'demo') {
+        if (user?.id !== 'demo') {
             try {
-                await removeMatch(user.id, gameId);
+                await api.removeMatch(gameId);
             } catch (err) {
                 console.error('Error removing match:', err);
             }
@@ -389,6 +382,23 @@ export default function App() {
     return (
         <>
             <div className="app tinder-layout">
+                {/* Confetti Effect */}
+                {showConfetti && (
+                    <div className="confetti-container">
+                        {[...Array(50)].map((_, i) => (
+                            <div
+                                key={i}
+                                className="confetti"
+                                style={{
+                                    left: `${Math.random() * 100}%`,
+                                    animationDelay: `${Math.random() * 0.5}s`,
+                                    backgroundColor: ['#ff6b6b', '#ffd700', '#4ecdc4', '#45b7d1', '#96ceb4'][Math.floor(Math.random() * 5)]
+                                }}
+                            />
+                        ))}
+                    </div>
+                )}
+
                 {/* Main Content Area */}
                 <div className="main-content">
                     <AnimatePresence mode="wait">
@@ -400,6 +410,8 @@ export default function App() {
                                 onCardClick={setSelectedGameId}
                                 onRefresh={handleRefresh}
                                 onButtonSwipe={handleButtonSwipe}
+                                canUndo={canUndo}
+                                onUndo={handleUndo}
                             />
                         )}
 
@@ -457,4 +469,3 @@ export default function App() {
         </>
     );
 }
-

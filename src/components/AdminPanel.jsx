@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { getAllUsers, updateUserRole, deleteUser, getMatchStats } from '../services/supabase';
+import { motion } from 'framer-motion';
+import { api } from '../services/api';
 
 export default function AdminPanel({ user, onClose }) {
     const [users, setUsers] = useState([]);
-    const [stats, setStats] = useState([]);
+    const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('users');
     const [error, setError] = useState('');
@@ -16,15 +16,16 @@ export default function AdminPanel({ user, onClose }) {
     const loadData = async () => {
         try {
             setLoading(true);
+            setError('');
             const [usersData, statsData] = await Promise.all([
-                getAllUsers(),
-                getMatchStats()
+                api.getAllUsers(),
+                api.getStats()
             ]);
             setUsers(usersData || []);
-            setStats(statsData || []);
+            setStats(statsData || null);
         } catch (err) {
             console.error('Error loading admin data:', err);
-            setError('Erro ao carregar dados');
+            setError('Erro ao carregar dados: ' + err.message);
         } finally {
             setLoading(false);
         }
@@ -32,25 +33,13 @@ export default function AdminPanel({ user, onClose }) {
 
     const handleRoleChange = async (userId, newRole) => {
         try {
-            await updateUserRole(userId, newRole);
+            await api.updateUserRole(userId, newRole);
             setUsers(users.map(u =>
                 u.id === userId ? { ...u, role: newRole } : u
             ));
         } catch (err) {
             console.error('Error updating role:', err);
             setError('Erro ao atualizar role');
-        }
-    };
-
-    const handleDeleteUser = async (userId) => {
-        if (!window.confirm('Tem certeza que deseja excluir este usuário?')) return;
-
-        try {
-            await deleteUser(userId);
-            setUsers(users.filter(u => u.id !== userId));
-        } catch (err) {
-            console.error('Error deleting user:', err);
-            setError('Erro ao excluir usuário');
         }
     };
 
@@ -79,8 +68,8 @@ export default function AdminPanel({ user, onClose }) {
             >
                 {/* Header */}
                 <div className="admin-header">
-                    <h2>👑 Painel Admin</h2>
-                    <button className="admin-close" onClick={onClose}>✕</button>
+                    <h2>Painel Admin</h2>
+                    <button className="admin-close" onClick={onClose}>X</button>
                 </div>
 
                 {/* Tabs */}
@@ -89,13 +78,13 @@ export default function AdminPanel({ user, onClose }) {
                         className={`admin-tab ${activeTab === 'users' ? 'active' : ''}`}
                         onClick={() => setActiveTab('users')}
                     >
-                        👥 Usuários ({users.length})
+                        Usuarios ({users.length})
                     </button>
                     <button
                         className={`admin-tab ${activeTab === 'stats' ? 'active' : ''}`}
                         onClick={() => setActiveTab('stats')}
                     >
-                        📊 Estatísticas
+                        Estatisticas
                     </button>
                 </div>
 
@@ -111,7 +100,7 @@ export default function AdminPanel({ user, onClose }) {
                     ) : activeTab === 'users' ? (
                         <div className="admin-users">
                             {users.length === 0 ? (
-                                <p className="admin-empty">Nenhum usuário cadastrado</p>
+                                <p className="admin-empty">Nenhum usuario cadastrado</p>
                             ) : (
                                 <table className="admin-table">
                                     <thead>
@@ -120,7 +109,6 @@ export default function AdminPanel({ user, onClose }) {
                                             <th>Email</th>
                                             <th>Role</th>
                                             <th>Criado em</th>
-                                            <th>Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -132,7 +120,7 @@ export default function AdminPanel({ user, onClose }) {
                                                     <select
                                                         value={u.role}
                                                         onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                                                        disabled={u.id === user.id}
+                                                        disabled={u.email === user.email}
                                                         className="admin-select"
                                                     >
                                                         <option value="user">User</option>
@@ -140,16 +128,6 @@ export default function AdminPanel({ user, onClose }) {
                                                     </select>
                                                 </td>
                                                 <td>{formatDate(u.created_at)}</td>
-                                                <td>
-                                                    {u.id !== user.id && (
-                                                        <button
-                                                            className="admin-delete-btn"
-                                                            onClick={() => handleDeleteUser(u.id)}
-                                                        >
-                                                            🗑️
-                                                        </button>
-                                                    )}
-                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -158,19 +136,24 @@ export default function AdminPanel({ user, onClose }) {
                         </div>
                     ) : (
                         <div className="admin-stats">
-                            <h3>🎮 Top 10 Jogos Mais Curtidos</h3>
-                            {stats.length === 0 ? (
-                                <p className="admin-empty">Nenhum match registrado ainda</p>
-                            ) : (
-                                <div className="stats-list">
-                                    {stats.map((stat, i) => (
-                                        <div key={i} className="stat-item">
-                                            <span className="stat-rank">#{i + 1}</span>
-                                            <span className="stat-name">{stat.name}</span>
-                                            <span className="stat-count">{stat.count} ❤️</span>
-                                        </div>
-                                    ))}
+                            <h3>Estatisticas Gerais</h3>
+                            {stats ? (
+                                <div className="stats-grid">
+                                    <div className="stat-card">
+                                        <div className="stat-value">{stats.totalUsers || 0}</div>
+                                        <div className="stat-label">Total de Usuarios</div>
+                                    </div>
+                                    <div className="stat-card">
+                                        <div className="stat-value">{stats.totalMatches || 0}</div>
+                                        <div className="stat-label">Total de Matches</div>
+                                    </div>
+                                    <div className="stat-card">
+                                        <div className="stat-value">{stats.totalSuperLikes || 0}</div>
+                                        <div className="stat-label">Super Likes</div>
+                                    </div>
                                 </div>
+                            ) : (
+                                <p className="admin-empty">Nenhuma estatistica disponivel</p>
                             )}
                         </div>
                     )}
@@ -178,7 +161,7 @@ export default function AdminPanel({ user, onClose }) {
 
                 {/* Refresh button */}
                 <button className="admin-refresh" onClick={loadData}>
-                    🔄 Atualizar
+                    Atualizar
                 </button>
             </motion.div>
         </motion.div>

@@ -1,0 +1,105 @@
+const API_URL = import.meta.env.VITE_API_URL || 'http://44.203.12.38:3001';
+
+class ApiService {
+    constructor() {
+        this.token = localStorage.getItem('auth_token');
+    }
+
+    setToken(token) {
+        this.token = token;
+        if (token) {
+            localStorage.setItem('auth_token', token);
+        } else {
+            localStorage.removeItem('auth_token');
+        }
+    }
+
+    getToken() {
+        return this.token || localStorage.getItem('auth_token');
+    }
+
+    async request(endpoint, options = {}) {
+        const url = `${API_URL}${endpoint}`;
+        const headers = {
+            'Content-Type': 'application/json',
+            ...options.headers,
+        };
+
+        const token = this.getToken();
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(url, {
+            ...options,
+            headers,
+        });
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ error: 'Request failed' }));
+            throw new Error(error.error || 'Request failed');
+        }
+
+        return response.json();
+    }
+
+    // Auth endpoints
+    async register(email, password, name) {
+        const data = await this.request('/api/auth/register', {
+            method: 'POST',
+            body: JSON.stringify({ email, password, name }),
+        });
+        this.setToken(data.token);
+        return data;
+    }
+
+    async login(email, password) {
+        const data = await this.request('/api/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({ email, password }),
+        });
+        this.setToken(data.token);
+        return data;
+    }
+
+    async getCurrentUser() {
+        try {
+            const data = await this.request('/api/auth/me');
+            return data.user;
+        } catch {
+            this.setToken(null);
+            return null;
+        }
+    }
+
+    logout() {
+        this.setToken(null);
+    }
+
+    // Matches endpoints
+    async getMatches() {
+        const data = await this.request('/api/matches');
+        return data.matches || [];
+    }
+
+    async saveMatch(game) {
+        return this.request('/api/matches', {
+            method: 'POST',
+            body: JSON.stringify({ game }),
+        });
+    }
+
+    async removeMatch(gameId) {
+        return this.request(`/api/matches/${gameId}`, {
+            method: 'DELETE',
+        });
+    }
+
+    // Health check
+    async healthCheck() {
+        return this.request('/health');
+    }
+}
+
+export const api = new ApiService();
+export default api;

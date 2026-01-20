@@ -95,6 +95,28 @@ class ApiService {
         });
     }
 
+    // Admin endpoints
+    async getAllUsers() {
+        return this.request('/api/admin/users');
+    }
+
+    async updateUserRole(userId, role) {
+        return this.request(`/api/admin/users/${userId}/role`, {
+            method: 'PUT',
+            body: JSON.stringify({ role })
+        });
+    }
+
+    async deleteUser(userId) {
+        return this.request(`/api/admin/users/${userId}`, {
+            method: 'DELETE'
+        });
+    }
+
+    async getMatchStats() {
+        return this.request('/api/admin/stats');
+    }
+
     // Health check
     async healthCheck() {
         return this.request('/health');

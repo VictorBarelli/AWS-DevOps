@@ -74,22 +74,8 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.get('/me', authenticateToken, async (req, res) => {
-    try {
-        const result = await pool.query(
-            'SELECT id, email, name, avatar_url, role, created_at FROM users WHERE id = $1',
-            [req.user.userId]
-        );
-
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        res.json({ user: result.rows[0] });
-    } catch (error) {
-        console.error('Get user error:', error);
-        res.status(500).json({ error: 'Failed to get user' });
-    }
+router.get('/me', authenticateToken, (req, res) => {
+    res.json({ user: req.user });
 });
 
 module.exports = router;

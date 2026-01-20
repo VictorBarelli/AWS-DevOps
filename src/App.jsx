@@ -62,10 +62,22 @@ export default function App() {
                         };
                         setUser(userData);
                         setSession({ idToken });
-                        setProfile({
-                            name: payload.name || payload.email?.split('@')[0],
-                            role: 'user'
-                        });
+                        setSession({ idToken });
+
+                        // Fetch profile from API to get role
+                        try {
+                            const userProfile = await api.getCurrentUser();
+                            setProfile({
+                                ...userData,
+                                ...userProfile
+                            });
+                        } catch (e) {
+                            console.error('Error fetching profile:', e);
+                            setProfile({
+                                name: payload.name || payload.email?.split('@')[0],
+                                role: 'user'
+                            });
+                        }
 
                         // Load matches from API
                         try {

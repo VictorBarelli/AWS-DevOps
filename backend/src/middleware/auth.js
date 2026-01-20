@@ -35,13 +35,14 @@ async function authenticateToken(req, res, next) {
         if (result.rows.length > 0) {
             req.user = result.rows[0];
         } else {
-            // User from Cognito not in DB yet.
-            // For now, treat as guest/user.
-            req.user = {
-                email: payload.email,
-                role: 'user',
-                cognito_sub: payload.sub
-            };
+            // User from Cognito not in DB yet -> Create them!
+            // Note: password_hash is NOT NULL in schema, so we provide a placeholder.
+            const newUser = await pool.query(
+                "INSERT INTO users (email, password_hash, role) VALUES ($1, 'cognito_oauth_user', 'user') RETURNING *",
+                [payload.email]
+            );
+            req.user = newUser.rows[0];
+            console.log(`✨ Created new user in DB: ${payload.email}`);
         }
 
         next();

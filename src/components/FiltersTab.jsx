@@ -170,6 +170,10 @@ export default function FiltersTab({
                     </div>
                 </div>
             </div>
+            {/* Version Indicator */}
+            <div style={{ textAlign: 'center', marginTop: '20px', color: '#666', fontSize: '10px' }}>
+                v1.1 - Admin Ready
+            </div>
         </div>
     );
 }

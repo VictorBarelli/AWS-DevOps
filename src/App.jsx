@@ -9,16 +9,8 @@ import HomeTab from './components/HomeTab';
 import LikesTab from './components/LikesTab';
 import FiltersTab from './components/FiltersTab';
 import { fetchGames, fetchGenres } from './services/rawgApi';
-import {
-    supabase,
-    getSession,
-    getUserProfile,
-    signOut,
-    getUserMatches,
-    saveMatch,
-    removeMatch,
-    createOrUpdateProfile
-} from './services/supabase';
+import cognitoAuth from './services/cognitoAuth';
+import api from './services/api';
 
 // LocalStorage keys (for demo mode)
 const STORAGE_KEYS = {
@@ -57,41 +49,82 @@ export default function App() {
     useEffect(() => {
         const initAuth = async () => {
             try {
-                const session = await getSession();
-                if (session?.user) {
-                    setUser(session.user);
-                    setSession(session);
-
-                    // Create or get user profile (handles OAuth users)
-                    await createOrUpdateProfile(session.user);
-
-                    // Get user profile with role
-                    let profile;
+                // Check for stored tokens (from OAuth callback)
+                const idToken = localStorage.getItem('id_token');
+                if (idToken) {
                     try {
-                        profile = await getUserProfile(session.user.id);
-                    } catch (e) {
-                        // Profile might not exist yet for OAuth users
-                        console.log('Profile not found, will be created');
-                    }
-                    setProfile(profile);
+                        const payload = JSON.parse(atob(idToken.split('.')[1]));
+                        const userData = {
+                            id: payload.sub,
+                            email: payload.email,
+                            user_metadata: { name: payload.name || payload.email }
+                        };
+                        setUser(userData);
+                        setSession({ idToken });
+                        setProfile({
+                            name: payload.name || payload.email?.split('@')[0],
+                            role: 'user'
+                        });
 
-                    // Check if onboarding needed for new OAuth users
-                    if (!profile?.onboarding_complete && !localStorage.getItem('gameswipe_onboarding_complete')) {
-                        setShowOnboarding(true);
-                    }
+                        // Load matches from API
+                        try {
+                            const userMatches = await api.getMatches();
+                            setMatches(userMatches.map(m => ({
+                                id: m.game_id,
+                                name: m.game_name,
+                                image: m.game_image,
+                                genres: m.game_genres,
+                                rating: m.game_rating
+                            })));
+                        } catch (e) {
+                            console.log('No matches found');
+                        }
 
-                    // Load user's matches from database
-                    try {
-                        const userMatches = await getUserMatches(session.user.id);
-                        setMatches(userMatches.map(m => ({
-                            id: m.game_id,
-                            name: m.game_name,
-                            image: m.game_image,
-                            genres: m.game_genres,
-                            rating: m.game_rating
-                        })));
+                        // Check onboarding
+                        if (!localStorage.getItem('gameswipe_onboarding_complete')) {
+                            setShowOnboarding(true);
+                        }
                     } catch (e) {
-                        console.log('No matches found');
+                        console.error('Token decode error:', e);
+                        localStorage.removeItem('id_token');
+                        localStorage.removeItem('access_token');
+                        localStorage.removeItem('refresh_token');
+                    }
+                } else {
+                    // Check Cognito session
+                    const cognitoSession = await cognitoAuth.getSession();
+                    if (cognitoSession) {
+                        const userInfo = await cognitoAuth.getUserInfo();
+                        const userData = {
+                            id: cognitoSession.getIdToken().payload.sub,
+                            email: userInfo.email,
+                            user_metadata: { name: userInfo.name || userInfo.email }
+                        };
+                        setUser(userData);
+                        setSession(cognitoSession);
+                        setProfile({
+                            name: userInfo.name || userInfo.email?.split('@')[0],
+                            role: 'user'
+                        });
+
+                        // Load matches from API
+                        try {
+                            api.setToken(cognitoSession.getIdToken().getJwtToken());
+                            const userMatches = await api.getMatches();
+                            setMatches(userMatches.map(m => ({
+                                id: m.game_id,
+                                name: m.game_name,
+                                image: m.game_image,
+                                genres: m.game_genres,
+                                rating: m.game_rating
+                            })));
+                        } catch (e) {
+                            console.log('No matches found');
+                        }
+
+                        if (!localStorage.getItem('gameswipe_onboarding_complete')) {
+                            setShowOnboarding(true);
+                        }
                     }
                 }
             } catch (err) {
@@ -102,20 +135,6 @@ export default function App() {
         };
 
         initAuth();
-
-        // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            async (event, session) => {
-                if (event === 'SIGNED_OUT') {
-                    setUser(null);
-                    setProfile(null);
-                    setSession(null);
-                    setMatches([]);
-                }
-            }
-        );
-
-        return () => subscription.unsubscribe();
     }, []);
 
     // Handle login
@@ -125,31 +144,36 @@ export default function App() {
 
         if (sessionData && userData.id !== 'demo') {
             try {
-                const profile = await getUserProfile(userData.id);
-                setProfile(profile);
+                setProfile({
+                    name: userData.user_metadata?.name || userData.email?.split('@')[0],
+                    role: 'user'
+                });
 
                 // Check if onboarding is complete
-                const onboardingComplete = profile?.onboarding_complete ||
-                    localStorage.getItem('gameswipe_onboarding_complete') === 'true';
+                const onboardingComplete = localStorage.getItem('gameswipe_onboarding_complete') === 'true';
 
                 if (!onboardingComplete) {
                     setShowOnboarding(true);
-                } else if (profile?.preferences) {
-                    setSelectedGenres(profile.preferences);
+                } else {
+                    const savedPrefs = localStorage.getItem('gameswipe_preferences');
+                    if (savedPrefs) setSelectedGenres(JSON.parse(savedPrefs));
                 }
 
-                // Load matches from database
-                const userMatches = await getUserMatches(userData.id);
-                setMatches(userMatches.map(m => ({
-                    id: m.game_id,
-                    name: m.game_name,
-                    image: m.game_image,
-                    genres: m.game_genres,
-                    rating: m.game_rating
-                })));
+                // Load matches from API
+                try {
+                    const userMatches = await api.getMatches();
+                    setMatches(userMatches.map(m => ({
+                        id: m.game_id,
+                        name: m.game_name,
+                        image: m.game_image,
+                        genres: m.game_genres,
+                        rating: m.game_rating
+                    })));
+                } catch (e) {
+                    console.log('No matches found');
+                }
             } catch (err) {
                 console.error('Error loading profile:', err);
-                // Check localStorage for onboarding
                 const onboardingComplete = localStorage.getItem('gameswipe_onboarding_complete') === 'true';
                 if (!onboardingComplete) {
                     setShowOnboarding(true);
@@ -183,9 +207,11 @@ export default function App() {
     // Handle logout
     const handleLogout = async () => {
         try {
-            if (session) {
-                await signOut();
-            }
+            cognitoAuth.signOut();
+            localStorage.removeItem('id_token');
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            api.setToken(null);
             setUser(null);
             setProfile(null);
             setSession(null);
@@ -296,7 +322,7 @@ export default function App() {
             // Save to database if logged in
             if (session && user?.id !== 'demo') {
                 try {
-                    await saveMatch(user.id, game);
+                    await api.saveMatch(game);
                 } catch (err) {
                     console.error('Error saving match:', err);
                 }
@@ -361,7 +387,7 @@ export default function App() {
 
             // Save to database if logged in
             if (session && user?.id !== 'demo') {
-                saveMatch(user.id, superLikedGame).catch(err => {
+                api.saveMatch(superLikedGame).catch(err => {
                     console.error('Error saving super like:', err);
                 });
             }
@@ -395,7 +421,7 @@ export default function App() {
 
         if (session && user?.id !== 'demo') {
             try {
-                await removeMatch(user.id, gameId);
+                await api.removeMatch(gameId);
             } catch (err) {
                 console.error('Error removing match:', err);
             }

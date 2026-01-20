@@ -19,7 +19,15 @@ async function run() {
             console.table(res.rows[0]);
         } else {
             console.log(`\n❌ Usuário ${email} não encontrado no banco de dados.`);
-            console.log('Certifique-se de ter feito login pelo menos uma vez para que o usuário seja criado.');
+
+            console.log('\n📋 Lista de usuários atuais no banco:');
+            const allUsers = await pool.query('SELECT id, email, role FROM users');
+            if (allUsers.rows.length === 0) {
+                console.log('   (Nenhum usuário no banco)');
+            } else {
+                allUsers.rows.forEach(u => console.log(`   - [${u.id}] ${u.email} (${u.role})`));
+            }
+            console.log('\nDICA: O email no banco deve ser IDÊNTICO ao que você digitou.');
         }
     } catch (e) {
         console.error('Erro ao atualizar usuário:', e);

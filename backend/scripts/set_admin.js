@@ -18,16 +18,16 @@ async function run() {
             console.log(`\n✅ SUCESSO! O usuário ${email} agora é um ADMIN.`);
             console.table(res.rows[0]);
         } else {
-            console.log(`\n❌ Usuário ${email} não encontrado no banco de dados.`);
+            console.log(`\n⚠️  Usuário ${email} não existe no banco. Criando manualmente...`);
 
-            console.log('\n📋 Lista de usuários atuais no banco:');
-            const allUsers = await pool.query('SELECT id, email, role FROM users');
-            if (allUsers.rows.length === 0) {
-                console.log('   (Nenhum usuário no banco)');
-            } else {
-                allUsers.rows.forEach(u => console.log(`   - [${u.id}] ${u.email} (${u.role})`));
-            }
-            console.log('\nDICA: O email no banco deve ser IDÊNTICO ao que você digitou.');
+            // Force create the user
+            const newUser = await pool.query(
+                "INSERT INTO users (email, password_hash, role) VALUES ($1, 'manual_admin_creation', 'admin') RETURNING id, name, email, role",
+                [email]
+            );
+
+            console.log(`\n✅ CRIADO E PROMOVIDO!`);
+            console.table(newUser.rows[0]);
         }
     } catch (e) {
         console.error('Erro ao atualizar usuário:', e);

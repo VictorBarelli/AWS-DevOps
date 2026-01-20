@@ -17,3 +17,9 @@ variable "domain_name" {
   type    = string
   default = ""
 }
+
+variable "key_pair_name" {
+  type        = string
+  default     = "gameswipe-key"
+  description = "Name of the EC2 key pair for SSH access"
+}

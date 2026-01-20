@@ -57,3 +57,23 @@ output "ecs_service_name" {
 output "alb_dns_name" {
   value = "http://${aws_lb.main.dns_name}"
 }
+
+output "backend_public_ip" {
+  value = aws_instance.backend.public_ip
+}
+
+output "backend_instance_id" {
+  value = aws_instance.backend.id
+}
+
+output "cognito_user_pool_id" {
+  value = aws_cognito_user_pool.main.id
+}
+
+output "cognito_client_id" {
+  value = aws_cognito_user_pool_client.web.id
+}
+
+output "cognito_domain" {
+  value = "https://${aws_cognito_user_pool_domain.main.domain}.auth.${var.aws_region}.amazoncognito.com"
+}

@@ -6,6 +6,7 @@ export default function TabNavigation({ activeTab, onTabChange, matchCount = 0 }
         { id: 'foryou', icon: '🎯', label: 'Para Você' },
         { id: 'likes', icon: '💚', label: 'Curtidas', badge: matchCount },
         { id: 'reviews', icon: '⭐', label: 'Reviews' },
+        { id: 'groups', icon: '👥', label: 'Grupos' },
         { id: 'filters', icon: '⚙️', label: 'Config' }
     ];
 

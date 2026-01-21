@@ -153,6 +153,38 @@ class ApiService {
     async getRecommendations() {
         return this.request('/api/recommendations');
     }
+
+    // Groups endpoints
+    async getGroups() {
+        return this.request('/api/groups');
+    }
+
+    async getGroup(slug) {
+        return this.request(`/api/groups/${slug}`);
+    }
+
+    async getMyGroups() {
+        return this.request('/api/groups/user/my');
+    }
+
+    async joinGroup(groupId) {
+        return this.request(`/api/groups/${groupId}/join`, {
+            method: 'POST'
+        });
+    }
+
+    async leaveGroup(groupId) {
+        return this.request(`/api/groups/${groupId}/leave`, {
+            method: 'POST'
+        });
+    }
+
+    async postGroupReview(groupId, reviewData) {
+        return this.request(`/api/groups/${groupId}/review`, {
+            method: 'POST',
+            body: JSON.stringify(reviewData)
+        });
+    }
 }
 
 export const api = new ApiService();

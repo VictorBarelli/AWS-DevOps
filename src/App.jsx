@@ -11,6 +11,7 @@ import LikesTab from './components/LikesTab';
 import FiltersTab from './components/FiltersTab';
 import ReviewsTab from './components/ReviewsTab';
 import ForYouTab from './components/ForYouTab';
+import GroupsSection from './components/GroupsSection';
 import { fetchGames, fetchGenres } from './services/rawgApi';
 import cognitoAuth from './services/cognitoAuth';
 import api from './services/api';
@@ -582,6 +583,12 @@ export default function App() {
 
                         {activeTab === 'reviews' && (
                             <ReviewsTab user={user} />
+                        )}
+
+                        {activeTab === 'groups' && (
+                            <div className="tab-content groups-tab">
+                                <GroupsSection user={user} />
+                            </div>
                         )}
 
                         {activeTab === 'filters' && (

@@ -9,6 +9,7 @@ import TabNavigation from './components/TabNavigation';
 import HomeTab from './components/HomeTab';
 import LikesTab from './components/LikesTab';
 import FiltersTab from './components/FiltersTab';
+import ReviewsTab from './components/ReviewsTab';
 import { fetchGames, fetchGenres } from './services/rawgApi';
 import cognitoAuth from './services/cognitoAuth';
 import api from './services/api';
@@ -568,6 +569,10 @@ export default function App() {
                                 onRemoveMatch={handleRemoveMatch}
                                 onMatchClick={(game) => setSelectedGameId(game.id)}
                             />
+                        )}
+
+                        {activeTab === 'reviews' && (
+                            <ReviewsTab user={user} />
                         )}
 
                         {activeTab === 'filters' && (

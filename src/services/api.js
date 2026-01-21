@@ -122,6 +122,32 @@ class ApiService {
     async healthCheck() {
         return this.request('/health');
     }
+
+    // Reviews endpoints
+    async getReviewsFeed(page = 1) {
+        return this.request(`/api/reviews/feed?page=${page}`);
+    }
+
+    async getGameReviews(gameId) {
+        return this.request(`/api/reviews/game/${gameId}`);
+    }
+
+    async getMyReviews() {
+        return this.request('/api/reviews/my');
+    }
+
+    async createReview(reviewData) {
+        return this.request('/api/reviews', {
+            method: 'POST',
+            body: JSON.stringify(reviewData)
+        });
+    }
+
+    async deleteReview(reviewId) {
+        return this.request(`/api/reviews/${reviewId}`, {
+            method: 'DELETE'
+        });
+    }
 }
 
 export const api = new ApiService();

@@ -4,6 +4,7 @@ export default function TabNavigation({ activeTab, onTabChange, matchCount = 0 }
     const tabs = [
         { id: 'home', icon: '🔥', label: 'Explorar' },
         { id: 'likes', icon: '💚', label: 'Curtidas', badge: matchCount },
+        { id: 'reviews', icon: '⭐', label: 'Reviews' },
         { id: 'filters', icon: '🎯', label: 'Filtros' }
     ];
 

@@ -1,4 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://44.203.12.38:3001';
+// API calls go through CloudFront proxy (same origin)
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 class ApiService {
     constructor() {

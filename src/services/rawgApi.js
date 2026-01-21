@@ -65,6 +65,9 @@ export async function fetchGames({
             // RAWG uses tags for adult content. Common tags: nudity, sexual-content, hentai
             // Note: This filters FOR games with these tags.
             params.tags = 'nudity,sexual-content,hentai';
+        } else {
+            // Exclude common Japanese/anime/Chinese game tags for more western-focused results
+            params.tags_exclude = 'anime,visual-novel,jrpg,otome,dating-sim,hentai,gacha,mobile-game';
         }
 
         // Use random page offset for variety

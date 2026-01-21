@@ -21,7 +21,7 @@ resource "aws_cloudfront_distribution" "website" {
 
   # Backend API origin (EC2)
   origin {
-    domain_name = aws_instance.backend.public_ip
+    domain_name = aws_instance.backend.public_dns
     origin_id   = "EC2-Backend"
 
     custom_origin_config {

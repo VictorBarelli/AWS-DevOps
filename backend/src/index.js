@@ -22,6 +22,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/matches', matchesRoutes);
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/reviews', require('./routes/reviews'));
+app.use('/api/recommendations', require('./routes/recommendations'));
 
 app.use((err, req, res, next) => {
     console.error(err.stack);

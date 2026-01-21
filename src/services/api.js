@@ -148,6 +148,11 @@ class ApiService {
             method: 'DELETE'
         });
     }
+
+    // AI Recommendations
+    async getRecommendations() {
+        return this.request('/api/recommendations');
+    }
 }
 
 export const api = new ApiService();

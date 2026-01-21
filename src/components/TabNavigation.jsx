@@ -3,9 +3,10 @@ import { motion } from 'framer-motion';
 export default function TabNavigation({ activeTab, onTabChange, matchCount = 0 }) {
     const tabs = [
         { id: 'home', icon: '🔥', label: 'Explorar' },
+        { id: 'foryou', icon: '🎯', label: 'Para Você' },
         { id: 'likes', icon: '💚', label: 'Curtidas', badge: matchCount },
         { id: 'reviews', icon: '⭐', label: 'Reviews' },
-        { id: 'filters', icon: '🎯', label: 'Filtros' }
+        { id: 'filters', icon: '⚙️', label: 'Config' }
     ];
 
     return (

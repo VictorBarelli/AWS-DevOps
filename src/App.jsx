@@ -10,6 +10,7 @@ import HomeTab from './components/HomeTab';
 import LikesTab from './components/LikesTab';
 import FiltersTab from './components/FiltersTab';
 import ReviewsTab from './components/ReviewsTab';
+import ForYouTab from './components/ForYouTab';
 import { fetchGames, fetchGenres } from './services/rawgApi';
 import cognitoAuth from './services/cognitoAuth';
 import api from './services/api';
@@ -560,6 +561,14 @@ export default function App() {
                                 onSuperLike={handleSuperLike}
                                 onUndo={handleUndo}
                                 canUndo={!!lastSwipedGame && currentIndex > 0}
+                            />
+                        )}
+
+                        {activeTab === 'foryou' && (
+                            <ForYouTab
+                                user={user}
+                                onSwipe={handleSwipe}
+                                onCardClick={setSelectedGameId}
                             />
                         )}
 

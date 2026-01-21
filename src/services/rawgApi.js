@@ -60,15 +60,16 @@ export async function fetchGames({
             params.dates = dates;
         }
 
-        // Add adult tags if enabled
-        if (adult) {
-            // RAWG uses tags for adult content. Common tags: nudity, sexual-content, hentai
-            // Note: This filters FOR games with these tags.
-            params.tags = 'nudity,sexual-content,hentai';
-        } else {
-            // Exclude common Japanese/anime/Chinese game tags for more western-focused results
-            params.tags_exclude = 'anime,visual-novel,jrpg,otome,dating-sim,hentai,gacha,mobile-game';
+        // Exclude common Japanese/anime/Chinese game tags for more western-focused results
+        // Also exclude adult content by default
+        const excludeTags = ['anime', 'visual-novel', 'jrpg', 'otome', 'dating-sim', 'gacha', 'mobile-game'];
+
+        if (!adult) {
+            // When adult filter is OFF, exclude adult content
+            excludeTags.push('nudity', 'sexual-content', 'hentai', 'nsfw');
         }
+
+        params.tags_exclude = excludeTags.join(',');
 
         // Use random page offset for variety
         if (!ordering) {

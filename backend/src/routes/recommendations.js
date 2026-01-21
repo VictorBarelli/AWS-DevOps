@@ -6,7 +6,6 @@ const https = require('https');
 
 const RAWG_API_KEY = process.env.RAWG_API_KEY || '';
 
-// Helper to make RAWG API requests
 const fetchFromRawg = (endpoint) => {
     return new Promise((resolve, reject) => {
         const url = `https://api.rawg.io/api${endpoint}${endpoint.includes('?') ? '&' : '?'}key=${RAWG_API_KEY}`;
@@ -25,12 +24,10 @@ const fetchFromRawg = (endpoint) => {
     });
 };
 
-// Get personalized recommendations based on user's matches
 router.get('/', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
 
-        // 1. Get user's matches and analyze genre preferences
         const matchesResult = await pool.query(`
             SELECT game_genres, game_rating, super_liked
             FROM matches
@@ -45,13 +42,12 @@ router.get('/', authenticateToken, async (req, res) => {
             });
         }
 
-        // 2. Calculate genre scores
         const genreScores = {};
         let totalGames = 0;
 
         matchesResult.rows.forEach(match => {
             const genres = match.game_genres || [];
-            const weight = match.super_liked ? 2 : 1; // Super liked games count double
+            const weight = match.super_liked ? 2 : 1;
 
             genres.forEach(genre => {
                 if (!genreScores[genre]) {
@@ -62,7 +58,6 @@ router.get('/', authenticateToken, async (req, res) => {
             totalGames++;
         });
 
-        // 3. Sort genres by score and get top 3
         const sortedGenres = Object.entries(genreScores)
             .sort((a, b) => b[1] - a[1])
             .slice(0, 3);
@@ -75,21 +70,18 @@ router.get('/', authenticateToken, async (req, res) => {
             });
         }
 
-        // 4. Build preferences object with percentages
         const preferences = {};
         const totalScore = Object.values(genreScores).reduce((a, b) => a + b, 0);
         sortedGenres.forEach(([genre, score]) => {
             preferences[genre] = Math.round((score / totalScore) * 100);
         });
 
-        // 5. Get IDs of games user already has
         const existingGamesResult = await pool.query(
             'SELECT game_id FROM matches WHERE user_id = $1',
             [userId]
         );
         const existingGameIds = new Set(existingGamesResult.rows.map(r => r.game_id));
 
-        // 6. Fetch recommendations from RAWG API based on top genres
         const genreSlugs = sortedGenres.map(([genre]) =>
             genre.toLowerCase().replace(/\s+/g, '-')
         ).join(',');
@@ -102,7 +94,6 @@ router.get('/', authenticateToken, async (req, res) => {
             );
 
             if (rawgData.results) {
-                // Filter out games user already has and format
                 recommendations = rawgData.results
                     .filter(game => !existingGameIds.has(game.id))
                     .slice(0, 15)
@@ -139,7 +130,6 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 });
 
-// Calculate how well a game matches user preferences (0-100)
 function calculateMatchScore(gameGenres, preferences) {
     if (gameGenres.length === 0) return 50;
 
@@ -153,7 +143,6 @@ function calculateMatchScore(gameGenres, preferences) {
         }
     });
 
-    // Base score of 30, plus weighted genre match
     return Math.min(99, Math.round(30 + (score * 0.7)));
 }
 

@@ -1,4 +1,3 @@
-// API calls go through CloudFront proxy (same origin)
 const API_URL = import.meta.env.VITE_API_URL || '';
 
 class ApiService {
@@ -44,7 +43,6 @@ class ApiService {
         return response.json();
     }
 
-    // Auth endpoints
     async register(email, password, name) {
         const data = await this.request('/api/auth/register', {
             method: 'POST',
@@ -77,7 +75,6 @@ class ApiService {
         this.setToken(null);
     }
 
-    // Matches endpoints
     async getMatches() {
         const data = await this.request('/api/matches');
         return data.matches || [];
@@ -96,7 +93,6 @@ class ApiService {
         });
     }
 
-    // Admin endpoints
     async getAllUsers() {
         return this.request('/api/admin/users');
     }
@@ -118,12 +114,10 @@ class ApiService {
         return this.request('/api/admin/stats');
     }
 
-    // Health check
     async healthCheck() {
         return this.request('/health');
     }
 
-    // Reviews endpoints
     async getReviewsFeed(page = 1) {
         return this.request(`/api/reviews/feed?page=${page}`);
     }
@@ -149,12 +143,10 @@ class ApiService {
         });
     }
 
-    // AI Recommendations
     async getRecommendations() {
         return this.request('/api/recommendations');
     }
 
-    // Groups endpoints
     async getGroups() {
         return this.request('/api/groups');
     }

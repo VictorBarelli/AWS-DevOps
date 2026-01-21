@@ -3,7 +3,6 @@ const router = express.Router();
 const { pool } = require('../db');
 const { authenticateToken } = require('../middleware/auth');
 
-// Get all groups
 router.get('/', async (req, res) => {
     try {
         const result = await pool.query(`
@@ -21,12 +20,10 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Get single group with reviews
 router.get('/:slug', async (req, res) => {
     try {
         const { slug } = req.params;
 
-        // Get group info
         const groupResult = await pool.query(
             'SELECT * FROM groups WHERE slug = $1',
             [slug]
@@ -38,7 +35,6 @@ router.get('/:slug', async (req, res) => {
 
         const group = groupResult.rows[0];
 
-        // Get reviews in this group
         const reviewsResult = await pool.query(`
             SELECT r.*, u.name as user_name, u.avatar_url as user_avatar
             FROM reviews r
@@ -48,7 +44,6 @@ router.get('/:slug', async (req, res) => {
             LIMIT 50
         `, [group.id]);
 
-        // Get member count
         const memberResult = await pool.query(
             'SELECT COUNT(*) FROM group_members WHERE group_id = $1',
             [group.id]
@@ -65,7 +60,6 @@ router.get('/:slug', async (req, res) => {
     }
 });
 
-// Join a group
 router.post('/:id/join', authenticateToken, async (req, res) => {
     try {
         const groupId = req.params.id;
@@ -77,7 +71,6 @@ router.post('/:id/join', authenticateToken, async (req, res) => {
             ON CONFLICT (group_id, user_id) DO NOTHING
         `, [groupId, userId]);
 
-        // Update member count
         await pool.query(`
             UPDATE groups 
             SET member_count = (SELECT COUNT(*) FROM group_members WHERE group_id = $1)
@@ -91,7 +84,6 @@ router.post('/:id/join', authenticateToken, async (req, res) => {
     }
 });
 
-// Leave a group
 router.post('/:id/leave', authenticateToken, async (req, res) => {
     try {
         const groupId = req.params.id;
@@ -102,7 +94,6 @@ router.post('/:id/leave', authenticateToken, async (req, res) => {
             [groupId, userId]
         );
 
-        // Update member count
         await pool.query(`
             UPDATE groups 
             SET member_count = (SELECT COUNT(*) FROM group_members WHERE group_id = $1)
@@ -116,7 +107,6 @@ router.post('/:id/leave', authenticateToken, async (req, res) => {
     }
 });
 
-// Get user's groups
 router.get('/user/my', authenticateToken, async (req, res) => {
     try {
         const result = await pool.query(`
@@ -134,7 +124,6 @@ router.get('/user/my', authenticateToken, async (req, res) => {
     }
 });
 
-// Post review to a group
 router.post('/:id/review', authenticateToken, async (req, res) => {
     try {
         const groupId = req.params.id;
@@ -144,7 +133,6 @@ router.post('/:id/review', authenticateToken, async (req, res) => {
             return res.status(400).json({ error: 'game_id, game_name, and rating are required' });
         }
 
-        // Check if user is member of group
         const memberCheck = await pool.query(
             'SELECT 1 FROM group_members WHERE group_id = $1 AND user_id = $2',
             [groupId, req.user.id]
@@ -154,7 +142,6 @@ router.post('/:id/review', authenticateToken, async (req, res) => {
             return res.status(403).json({ error: 'You must join the group first' });
         }
 
-        // Create review with group_id
         const result = await pool.query(`
             INSERT INTO reviews (user_id, game_id, game_name, game_image, rating, comment, is_public, group_id)
             VALUES ($1, $2, $3, $4, $5, $6, true, $7)

@@ -41,7 +41,6 @@ async function initDatabase() {
       )
     `);
 
-    // Reviews table for community ratings
     await client.query(`
       CREATE TABLE IF NOT EXISTS reviews (
         id SERIAL PRIMARY KEY,
@@ -59,7 +58,6 @@ async function initDatabase() {
       )
     `);
 
-    // Groups table for genre-based communities
     await client.query(`
       CREATE TABLE IF NOT EXISTS groups (
         id SERIAL PRIMARY KEY,
@@ -73,7 +71,6 @@ async function initDatabase() {
       )
     `);
 
-    // Group members junction table
     await client.query(`
       CREATE TABLE IF NOT EXISTS group_members (
         group_id INTEGER REFERENCES groups(id) ON DELETE CASCADE,
@@ -84,7 +81,6 @@ async function initDatabase() {
       )
     `);
 
-    // Seed default genre groups if they don't exist
     const defaultGroups = [
       { name: 'Action Lovers', slug: 'action', genre: 'Action', desc: 'Para fãs de jogos de ação e adrenalina' },
       { name: 'RPG Masters', slug: 'rpg', genre: 'RPG', desc: 'Comunidade de amantes de RPGs' },

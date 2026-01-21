@@ -3,7 +3,6 @@ const router = express.Router();
 const { pool } = require('../db');
 const { authenticateToken } = require('../middleware/auth');
 
-// Get all public reviews (community feed)
 router.get('/feed', async (req, res) => {
     try {
         const { page = 1, limit = 20 } = req.query;
@@ -34,7 +33,6 @@ router.get('/feed', async (req, res) => {
     }
 });
 
-// Get reviews for a specific game
 router.get('/game/:gameId', async (req, res) => {
     try {
         const { gameId } = req.params;
@@ -46,7 +44,6 @@ router.get('/game/:gameId', async (req, res) => {
             ORDER BY r.created_at DESC
         `, [gameId]);
 
-        // Calculate average rating
         const avgResult = await pool.query(`
             SELECT AVG(rating) as avg_rating, COUNT(*) as count
             FROM reviews WHERE game_id = $1 AND is_public = true
@@ -63,7 +60,6 @@ router.get('/game/:gameId', async (req, res) => {
     }
 });
 
-// Get user's own reviews
 router.get('/my', authenticateToken, async (req, res) => {
     try {
         const result = await pool.query(`
@@ -79,7 +75,6 @@ router.get('/my', authenticateToken, async (req, res) => {
     }
 });
 
-// Create or update a review
 router.post('/', authenticateToken, async (req, res) => {
     try {
         const { game_id, game_name, game_image, rating, comment, is_public = true } = req.body;
@@ -92,7 +87,6 @@ router.post('/', authenticateToken, async (req, res) => {
             return res.status(400).json({ error: 'Rating must be between 1 and 5' });
         }
 
-        // Upsert - insert or update if exists
         const result = await pool.query(`
             INSERT INTO reviews (user_id, game_id, game_name, game_image, rating, comment, is_public)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -108,7 +102,6 @@ router.post('/', authenticateToken, async (req, res) => {
     }
 });
 
-// Delete a review
 router.delete('/:id', authenticateToken, async (req, res) => {
     try {
         const { id } = req.params;

@@ -53,6 +53,15 @@ export default function GameDetailsModal({ gameId, onClose, onSwipe }) {
     };
 
     const handlePass = () => {
+        if (game) {
+            onSwipe('left', {
+                id: game.id,
+                name: game.name,
+                image: game.image,
+                genres: game.genres,
+                rating: game.rating
+            });
+        }
         onClose();
     };
 
@@ -122,7 +131,7 @@ export default function GameDetailsModal({ gameId, onClose, onSwipe }) {
                                 )}
                                 {game.metacritic && (
                                     <span className={`meta-item metacritic ${game.metacritic >= 75 ? 'high' :
-                                            game.metacritic >= 50 ? 'mid' : 'low'
+                                        game.metacritic >= 50 ? 'mid' : 'low'
                                         }`}>
                                         MC {game.metacritic}
                                     </span>

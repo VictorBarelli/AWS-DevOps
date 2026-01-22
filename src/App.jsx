@@ -575,6 +575,7 @@ export default function App() {
                                 onButtonSwipe={handleButtonSwipe}
                                 onSuperLike={handleSuperLike}
                                 onUndo={handleUndo}
+                                canUndo={!!lastSwipedGame && currentIndex > 0}
                                 onShare={(game) => setShareGame(game)}
                             />
                         )}

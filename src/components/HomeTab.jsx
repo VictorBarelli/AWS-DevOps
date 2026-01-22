@@ -8,9 +8,8 @@ export default function HomeTab({
     onCardClick,
     onRefresh,
     onButtonSwipe,
-    onSuperLike,
-    onUndo,
-    canUndo
+    canUndo,
+    onUndo
 }) {
     if (loading) {
         return (
@@ -71,8 +70,8 @@ export default function HomeTab({
                     ✕
                 </button>
                 <button
-                    className="action-btn superlike"
-                    onClick={() => onSuperLike && onSuperLike(currentCards[0])}
+                    className="action-btn super"
+                    onClick={() => onButtonSwipe('super')}
                     title="Super Like!"
                 >
                     ⭐

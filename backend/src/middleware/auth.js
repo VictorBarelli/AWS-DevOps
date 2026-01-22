@@ -20,14 +20,12 @@ async function authenticateToken(req, res, next) {
 
         console.log('Token payload:', JSON.stringify(payload, null, 2));
 
-        const email = payload.email ||
-            payload['cognito:username'] ||
-            payload.identities?.[0]?.userId ||
-            payload.sub;
+        const email = payload.email || payload['cognito:username'] || payload.sub;
+        const name = payload.name || payload['cognito:username'] || 'User';
 
         if (!email) {
-            console.error('No email found in token payload:', payload);
-            return res.status(403).json({ error: 'No email in token' });
+            console.error('No identifier found in token payload:', payload);
+            return res.status(403).json({ error: 'No identifier in token' });
         }
 
         const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
@@ -36,11 +34,11 @@ async function authenticateToken(req, res, next) {
             req.user = result.rows[0];
         } else {
             const newUser = await pool.query(
-                "INSERT INTO users (email, password_hash, role) VALUES ($1, 'cognito_oauth_user', 'user') RETURNING *",
-                [email]
+                "INSERT INTO users (email, password_hash, name, role) VALUES ($1, 'cognito_oauth_user', $2, 'user') RETURNING *",
+                [email, name]
             );
             req.user = newUser.rows[0];
-            console.log(`Created new user in DB: ${email}`);
+            console.log(`Created new user in DB: ${email} (${name})`);
         }
 
         next();

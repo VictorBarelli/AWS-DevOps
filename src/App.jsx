@@ -9,6 +9,7 @@ import TabNavigation from './components/TabNavigation';
 import HomeTab from './components/HomeTab';
 import LikesTab from './components/LikesTab';
 import FiltersTab from './components/FiltersTab';
+import ForYouTab from './components/ForYouTab';
 import ShareModal from './components/ShareModal';
 import ProfileTab from './components/ProfileTab';
 import GroupsSection from './components/GroupsSection';
@@ -48,6 +49,7 @@ export default function App() {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [lastSwipedGame, setLastSwipedGame] = useState(null);
+    const [showConfetti, setShowConfetti] = useState(false);
 
     // Check for existing session on mount
     useEffect(() => {

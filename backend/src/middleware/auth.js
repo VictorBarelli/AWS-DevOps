@@ -32,6 +32,13 @@ async function authenticateToken(req, res, next) {
 
         if (result.rows.length > 0) {
             req.user = result.rows[0];
+
+            // If we have a better name in the token, update the DB
+            if (payload.name && req.user.name !== payload.name) {
+                await pool.query('UPDATE users SET name = $1 WHERE id = $2', [payload.name, req.user.id]);
+                req.user.name = payload.name;
+                console.log(`Updated user name: ${payload.name}`);
+            }
         } else {
             const newUser = await pool.query(
                 "INSERT INTO users (email, password_hash, name, role) VALUES ($1, 'cognito_oauth_user', $2, 'user') RETURNING *",

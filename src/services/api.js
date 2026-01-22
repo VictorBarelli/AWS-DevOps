@@ -2,20 +2,24 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 
 class ApiService {
     constructor() {
-        this.token = localStorage.getItem('auth_token');
+        // Use id_token from Cognito OAuth
+        this.token = localStorage.getItem('id_token') || localStorage.getItem('auth_token');
     }
 
     setToken(token) {
         this.token = token;
         if (token) {
             localStorage.setItem('auth_token', token);
+            localStorage.setItem('id_token', token);
         } else {
             localStorage.removeItem('auth_token');
+            localStorage.removeItem('id_token');
         }
     }
 
     getToken() {
-        return this.token || localStorage.getItem('auth_token');
+        // Check both possible token storage locations
+        return this.token || localStorage.getItem('id_token') || localStorage.getItem('auth_token');
     }
 
     async request(endpoint, options = {}) {
@@ -66,7 +70,6 @@ class ApiService {
             const data = await this.request('/api/auth/me');
             return data.user;
         } catch {
-            this.setToken(null);
             return null;
         }
     }

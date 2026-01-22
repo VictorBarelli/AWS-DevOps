@@ -83,7 +83,7 @@ export default function App() {
                         // Load matches from API
                         try {
                             const userMatches = await api.getMatches();
-                            setMatches(userMatches.map(m => ({
+                            setMatches((userMatches || []).map(m => ({
                                 id: m.game_id,
                                 name: m.game_name,
                                 image: m.game_image,
@@ -139,7 +139,7 @@ export default function App() {
                         try {
                             api.setToken(cognitoSession.getIdToken().getJwtToken());
                             const userMatches = await api.getMatches();
-                            setMatches(userMatches.map(m => ({
+                            setMatches((userMatches || []).map(m => ({
                                 id: m.game_id,
                                 name: m.game_name,
                                 image: m.game_image,
@@ -201,7 +201,7 @@ export default function App() {
                 // Load matches from API
                 try {
                     const userMatches = await api.getMatches();
-                    setMatches(userMatches.map(m => ({
+                    setMatches((userMatches || []).map(m => ({
                         id: m.game_id,
                         name: m.game_name,
                         image: m.game_image,

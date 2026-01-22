@@ -8,7 +8,7 @@ router.get('/', authenticateToken, async (req, res) => {
     try {
         const result = await pool.query(
             'SELECT * FROM matches WHERE user_id = $1 ORDER BY created_at DESC',
-            [req.user.userId]
+            [req.user.id]
         );
 
         const matches = result.rows.map(m => ({
@@ -40,7 +40,7 @@ router.post('/', authenticateToken, async (req, res) => {
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        ON CONFLICT (user_id, game_id) DO NOTHING`,
             [
-                req.user.userId,
+                req.user.id,
                 game.id,
                 game.name,
                 game.image,
@@ -63,7 +63,7 @@ router.delete('/:gameId', authenticateToken, async (req, res) => {
 
         await pool.query(
             'DELETE FROM matches WHERE user_id = $1 AND game_id = $2',
-            [req.user.userId, gameId]
+            [req.user.id, gameId]
         );
 
         res.json({ success: true });

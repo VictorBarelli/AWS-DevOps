@@ -18,31 +18,29 @@ async function authenticateToken(req, res, next) {
     try {
         const payload = await verifier.verify(token);
 
-        // Fetch user from DB to get role
-        // We use the 'sub' claim as the stable ID, which matches 'id' in our users table if we are using UUIDs?
-        // Wait, our users table uses SERIAL integer IDs.
-        // But Cognito uses UUIDs.
-        // We need to map Cognito subject (UUID) to our user.
-        // In previous Supabase migration, we might have been using UUIDs?
-        // Let's check db.js again.
-        // db.js says `id SERIAL PRIMARY KEY`.
-        // This is a problem. Cognito IDs are strings (UUIDs).
-        // We need to either change `id` to TEXT/UUID or add a `cognito_id` column.
-        // OR, we look up by Email.
+        console.log('Token payload:', JSON.stringify(payload, null, 2));
 
-        const result = await pool.query('SELECT * FROM users WHERE email = $1', [payload.email]);
+        const email = payload.email ||
+            payload['cognito:username'] ||
+            payload.identities?.[0]?.userId ||
+            payload.sub;
+
+        if (!email) {
+            console.error('No email found in token payload:', payload);
+            return res.status(403).json({ error: 'No email in token' });
+        }
+
+        const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
 
         if (result.rows.length > 0) {
             req.user = result.rows[0];
         } else {
-            // User from Cognito not in DB yet -> Create them!
-            // Note: password_hash is NOT NULL in schema, so we provide a placeholder.
             const newUser = await pool.query(
                 "INSERT INTO users (email, password_hash, role) VALUES ($1, 'cognito_oauth_user', 'user') RETURNING *",
-                [payload.email]
+                [email]
             );
             req.user = newUser.rows[0];
-            console.log(`✨ Created new user in DB: ${payload.email}`);
+            console.log(`Created new user in DB: ${email}`);
         }
 
         next();

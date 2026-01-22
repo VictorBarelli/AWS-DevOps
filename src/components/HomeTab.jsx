@@ -39,17 +39,6 @@ export default function HomeTab({
 
     return (
         <div className="tab-content home-tab">
-            {/* Undo Button */}
-            {canUndo && (
-                <button
-                    className="undo-btn"
-                    onClick={onUndo}
-                    title="Voltar"
-                >
-                    ↩
-                </button>
-            )}
-
             <div className="card-container">
                 <AnimatePresence>
                     {currentCards.map((game, i) => (
@@ -65,6 +54,15 @@ export default function HomeTab({
             </div>
 
             <div className="action-buttons">
+                {canUndo && (
+                    <button
+                        className="action-btn undo"
+                        onClick={onUndo}
+                        title="Voltar"
+                    >
+                        ↩
+                    </button>
+                )}
                 <button
                     className="action-btn nope"
                     onClick={() => onButtonSwipe('left')}

@@ -2198,6 +2198,15 @@ body {
   background: rgba(239, 68, 68, 0.4);
 }
 
+.modal-action-btn.close {
+  background: rgba(107, 114, 128, 0.2);
+  color: #9ca3af;
+}
+
+.modal-action-btn.close:hover {
+  background: rgba(107, 114, 128, 0.4);
+}
+
 .modal-action-btn.like {
   background: linear-gradient(135deg, #10b981, #059669);
   color: white;

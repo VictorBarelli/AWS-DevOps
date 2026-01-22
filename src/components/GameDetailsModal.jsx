@@ -89,9 +89,6 @@ export default function GameDetailsModal({ gameId, onClose, onSwipe }) {
                     </div>
                 ) : game ? (
                     <>
-                        {/* Close button */}
-                        <button className="modal-close" onClick={onClose}>✕</button>
-
                         {/* Image Carousel */}
                         <div className="modal-gallery">
                             {screenshots.length > 0 && (
@@ -188,6 +185,9 @@ export default function GameDetailsModal({ gameId, onClose, onSwipe }) {
 
                         {/* Action buttons */}
                         <div className="modal-actions">
+                            <button className="modal-action-btn close" onClick={onClose}>
+                                ↩ Voltar
+                            </button>
                             <button className="modal-action-btn pass" onClick={handlePass}>
                                 ✕ Passar
                             </button>

@@ -53,15 +53,14 @@ export default function HomeTab({
             </div>
 
             <div className="action-buttons">
-                {canUndo && (
-                    <button
-                        className="action-btn undo"
-                        onClick={onUndo}
-                        title="Voltar"
-                    >
-                        ↩
-                    </button>
-                )}
+                <button
+                    className={`action-btn undo ${!canUndo ? 'disabled' : ''}`}
+                    onClick={onUndo}
+                    disabled={!canUndo}
+                    title="Voltar"
+                >
+                    ↩
+                </button>
                 <button
                     className="action-btn nope"
                     onClick={() => onButtonSwipe('left')}

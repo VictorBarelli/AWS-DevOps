@@ -7,7 +7,9 @@ export default function HomeTab({
     onSwipe,
     onCardClick,
     onRefresh,
-    onButtonSwipe
+    onButtonSwipe,
+    canUndo,
+    onUndo
 }) {
     if (loading) {
         return (
@@ -51,6 +53,15 @@ export default function HomeTab({
             </div>
 
             <div className="action-buttons">
+                {canUndo && (
+                    <button
+                        className="action-btn undo"
+                        onClick={onUndo}
+                        title="Voltar"
+                    >
+                        ↩
+                    </button>
+                )}
                 <button
                     className="action-btn nope"
                     onClick={() => onButtonSwipe('left')}
@@ -59,11 +70,11 @@ export default function HomeTab({
                     ✕
                 </button>
                 <button
-                    className="action-btn info"
-                    onClick={() => onCardClick(currentCards[0]?.id)}
-                    title="Ver detalhes"
+                    className="action-btn super"
+                    onClick={() => onButtonSwipe('super')}
+                    title="Super Like!"
                 >
-                    ℹ
+                    ⭐
                 </button>
                 <button
                     className="action-btn like"

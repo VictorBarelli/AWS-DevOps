@@ -338,6 +338,29 @@ body {
   color: white;
 }
 
+.action-btn.undo {
+  color: #f59e0b;
+  border-color: #f59e0b;
+  width: 50px;
+  height: 50px;
+  font-size: 20px;
+}
+
+.action-btn.undo:hover {
+  background: #f59e0b;
+  color: white;
+}
+
+.action-btn.super {
+  color: #ffd700;
+  border-color: #ffd700;
+}
+
+.action-btn.super:hover {
+  background: #ffd700;
+  color: #1a1a1e;
+}
+
 /* ==========================================
    Filter Panel Styles
    ========================================== */

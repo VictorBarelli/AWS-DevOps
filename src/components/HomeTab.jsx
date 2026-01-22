@@ -8,6 +8,7 @@ export default function HomeTab({
     onCardClick,
     onRefresh,
     onButtonSwipe,
+    onSuperLike,
     canUndo,
     onUndo,
     onShare
@@ -71,7 +72,7 @@ export default function HomeTab({
                 </button>
                 <button
                     className="action-btn super"
-                    onClick={() => onButtonSwipe('super')}
+                    onClick={() => onSuperLike && onSuperLike(currentCards[0])}
                     title="Super Like!"
                 >
                     ⭐
@@ -85,7 +86,7 @@ export default function HomeTab({
                 </button>
                 <button
                     className="action-btn share"
-                    onClick={() => onShare(currentCards[0])}
+                    onClick={() => onShare && onShare(currentCards[0])}
                     title="Compartilhar"
                 >
                     📤

@@ -86,6 +86,7 @@ export default function App() {
 
                         // Load matches from API
                         try {
+                            api.setToken(idToken);
                             const userMatches = await api.getMatches();
                             setMatches((userMatches || []).map(m => ({
                                 id: m.game_id,

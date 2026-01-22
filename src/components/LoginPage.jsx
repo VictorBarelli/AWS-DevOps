@@ -149,15 +149,7 @@ export default function LoginPage({ onLogin }) {
         cognitoAuth.signInWithGoogle();
     };
 
-    const handleDemoAccess = () => {
-        // Demo mode - use localStorage only
-        const demoUser = {
-            id: 'demo',
-            email: 'demo@gameswipe.com',
-            user_metadata: { name: 'Visitante' }
-        };
-        onLogin(demoUser, null);
-    };
+
 
     // Confirmation code form
     if (needsConfirmation) {
@@ -355,13 +347,7 @@ export default function LoginPage({ onLogin }) {
                     </button>
                 </form>
 
-                {/* Demo access */}
-                <button
-                    className="demo-btn"
-                    onClick={handleDemoAccess}
-                >
-                    Continuar sem conta →
-                </button>
+
             </motion.div>
 
             {/* Footer */}

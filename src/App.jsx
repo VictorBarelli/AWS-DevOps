@@ -10,6 +10,8 @@ import HomeTab from './components/HomeTab';
 import LikesTab from './components/LikesTab';
 import FiltersTab from './components/FiltersTab';
 import ShareModal from './components/ShareModal';
+import ProfileTab from './components/ProfileTab';
+import GroupsSection from './components/GroupsSection';
 import { fetchGames, fetchGenres } from './services/rawgApi';
 import cognitoAuth from './services/cognitoAuth';
 import api from './services/api';

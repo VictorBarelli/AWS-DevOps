@@ -8,6 +8,7 @@ export default function ShareModal({ game, onClose }) {
     const [sharing, setSharing] = useState(false);
     const [message, setMessage] = useState('');
     const [success, setSuccess] = useState(false);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         loadGroups();
@@ -26,6 +27,7 @@ export default function ShareModal({ game, onClose }) {
 
     const handleShare = async (groupId) => {
         setSharing(true);
+        setError(null);
         try {
             await api.postGroupReview(groupId, {
                 gameId: game.id,
@@ -39,7 +41,7 @@ export default function ShareModal({ game, onClose }) {
             }, 1500);
         } catch (err) {
             console.error('Error sharing:', err);
-            alert('Erro ao compartilhar');
+            setError('Erro ao compartilhar');
         } finally {
             setSharing(false);
         }
@@ -80,6 +82,12 @@ export default function ShareModal({ game, onClose }) {
                         onChange={(e) => setMessage(e.target.value)}
                     />
                 </div>
+
+                {error && (
+                    <div className="share-error">
+                        {error}
+                    </div>
+                )}
 
                 {success ? (
                     <div className="share-success">

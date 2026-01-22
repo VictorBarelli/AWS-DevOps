@@ -9,10 +9,7 @@ import TabNavigation from './components/TabNavigation';
 import HomeTab from './components/HomeTab';
 import LikesTab from './components/LikesTab';
 import FiltersTab from './components/FiltersTab';
-import ReviewsTab from './components/ReviewsTab';
-import ForYouTab from './components/ForYouTab';
-import GroupsSection from './components/GroupsSection';
-import ProfileTab from './components/ProfileTab';
+import ShareModal from './components/ShareModal';
 import { fetchGames, fetchGenres } from './services/rawgApi';
 import cognitoAuth from './services/cognitoAuth';
 import api from './services/api';
@@ -33,8 +30,8 @@ export default function App() {
     const [showAdmin, setShowAdmin] = useState(false);
     const [showOnboarding, setShowOnboarding] = useState(false);
     const [selectedGameId, setSelectedGameId] = useState(null);
-    const [showConfetti, setShowConfetti] = useState(false);
-    const [activeTab, setActiveTab] = useState('home'); // 'home' | 'likes' | 'filters'
+    const [activeTab, setActiveTab] = useState('home');
+    const [shareGame, setShareGame] = useState(null);
 
     // Game State
     const [games, setGames] = useState([]);
@@ -574,15 +571,7 @@ export default function App() {
                                 onButtonSwipe={handleButtonSwipe}
                                 onSuperLike={handleSuperLike}
                                 onUndo={handleUndo}
-                                canUndo={!!lastSwipedGame && currentIndex > 0}
-                            />
-                        )}
-
-                        {activeTab === 'foryou' && (
-                            <ForYouTab
-                                user={user}
-                                onSwipe={handleSwipe}
-                                onCardClick={setSelectedGameId}
+                                onShare={(game) => setShareGame(game)}
                             />
                         )}
 
@@ -653,6 +642,16 @@ export default function App() {
                         gameId={selectedGameId}
                         onClose={() => setSelectedGameId(null)}
                         onSwipe={handleSwipe}
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* Share Modal */}
+            <AnimatePresence>
+                {shareGame && (
+                    <ShareModal
+                        game={shareGame}
+                        onClose={() => setShareGame(null)}
                     />
                 )}
             </AnimatePresence>

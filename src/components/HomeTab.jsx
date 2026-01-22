@@ -9,7 +9,8 @@ export default function HomeTab({
     onRefresh,
     onButtonSwipe,
     canUndo,
-    onUndo
+    onUndo,
+    onShare
 }) {
     if (loading) {
         return (
@@ -81,6 +82,13 @@ export default function HomeTab({
                     title="Quero jogar!"
                 >
                     ♥
+                </button>
+                <button
+                    className="action-btn share"
+                    onClick={() => onShare(currentCards[0])}
+                    title="Compartilhar"
+                >
+                    📤
                 </button>
             </div>
         </div>

@@ -394,6 +394,152 @@ body {
   color: #1a1a1e;
 }
 
+.action-btn.share {
+  color: #3b82f6;
+  border-color: #3b82f6;
+  width: 50px;
+  height: 50px;
+  font-size: 20px;
+}
+
+.action-btn.share:hover {
+  background: #3b82f6;
+  color: white;
+}
+
+/* Share Modal */
+.share-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.share-modal {
+  background: var(--bg-card);
+  border-radius: var(--border-radius-lg);
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+}
+
+.share-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.share-modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.share-modal-header .close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.share-game-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius-md);
+  margin-bottom: 16px;
+}
+
+.share-game-preview img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.share-game-preview span {
+  font-weight: 600;
+  flex: 1;
+}
+
+.share-message input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+.share-message input::placeholder {
+  color: var(--text-muted);
+}
+
+.share-groups-label {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+}
+
+.share-group-btn {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  color: var(--text-primary);
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: all 0.2s;
+}
+
+.share-group-btn:hover {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.share-group-btn .group-name {
+  font-weight: 600;
+}
+
+.share-group-btn .group-members {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.share-success {
+  text-align: center;
+  padding: 20px;
+  color: var(--accent-like);
+  font-weight: 600;
+}
+
+.share-loading,
+.share-empty {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-secondary);
+}
+
+.share-empty p {
+  margin: 8px 0;
+}
+
 /* ==========================================
    Filter Panel Styles
    ========================================== */

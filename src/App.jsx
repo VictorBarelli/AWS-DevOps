@@ -60,10 +60,14 @@ export default function App() {
                 if (idToken) {
                     try {
                         const payload = JSON.parse(atob(idToken.split('.')[1]));
+
+                        const email = payload.email || payload['cognito:username'];
+                        const name = payload.name || payload['cognito:username'] || 'Usuário';
+
                         const userData = {
                             id: payload.sub,
-                            email: payload.email,
-                            user_metadata: { name: payload.name || payload.email }
+                            email: email,
+                            user_metadata: { name: name }
                         };
                         setUser(userData);
                         setSession({ idToken });

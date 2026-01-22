@@ -31,10 +31,14 @@ export default function LoginPage({ onLogin }) {
 
                         // Decode JWT to get user info
                         const payload = JSON.parse(atob(tokens.id_token.split('.')[1]));
+
+                        const email = payload.email || payload['cognito:username'];
+                        const name = payload.name || payload['cognito:username'] || 'Usuário';
+
                         const user = {
                             id: payload.sub,
-                            email: payload.email,
-                            user_metadata: { name: payload.name || payload.email }
+                            email: email,
+                            user_metadata: { name: name }
                         };
                         onLogin(user, tokens);
                     }

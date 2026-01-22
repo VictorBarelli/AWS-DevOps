@@ -78,6 +78,13 @@ class ApiService {
         this.setToken(null);
     }
 
+    async updateProfile(name) {
+        return this.request('/api/profile', {
+            method: 'PUT',
+            body: JSON.stringify({ name })
+        });
+    }
+
     async getMatches() {
         const data = await this.request('/api/matches');
         return data.matches || [];

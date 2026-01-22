@@ -1,11 +1,31 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import ReviewsTab from './ReviewsTab';
+import api from '../services/api';
 
 export default function ProfileTab({ user, profile, onLogout, onOpenAdmin }) {
     const [activeSection, setActiveSection] = useState('info');
+    const [isEditing, setIsEditing] = useState(false);
+    const [editName, setEditName] = useState(profile?.name || '');
+    const [updating, setUpdating] = useState(false);
 
     const isAdmin = profile?.role === 'admin';
+
+    const handleUpdateProfile = async () => {
+        if (!editName.trim()) return;
+        setUpdating(true);
+        try {
+            await api.updateProfile(editName);
+            // Reload page to refresh profile
+            window.location.reload();
+        } catch (error) {
+            console.error('Failed to update profile:', error);
+            alert('Erro ao atualizar perfil');
+        } finally {
+            setUpdating(false);
+            setIsEditing(false);
+        }
+    };
 
     return (
         <div className="tab-content profile-tab">
@@ -18,7 +38,50 @@ export default function ProfileTab({ user, profile, onLogout, onOpenAdmin }) {
                     )}
                 </div>
                 <div className="profile-info">
-                    <h2>{profile?.name || user?.email?.split('@')[0] || 'Usuário'}</h2>
+                    {isEditing ? (
+                        <div className="profile-edit-form">
+                            <input
+                                type="text"
+                                value={editName}
+                                onChange={(e) => setEditName(e.target.value)}
+                                placeholder="Seu nome"
+                                className="profile-name-input"
+                                autoFocus
+                            />
+                            <div className="profile-edit-actions">
+                                <button
+                                    className="save-btn"
+                                    onClick={handleUpdateProfile}
+                                    disabled={updating}
+                                >
+                                    {updating ? '...' : '💾'}
+                                </button>
+                                <button
+                                    className="cancel-btn"
+                                    onClick={() => {
+                                        setIsEditing(false);
+                                        setEditName(profile?.name || '');
+                                    }}
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="profile-name-container">
+                            <h2>{profile?.name || user?.email?.split('@')[0] || 'Usuário'}</h2>
+                            <button
+                                className="edit-profile-btn"
+                                onClick={() => {
+                                    setIsEditing(true);
+                                    setEditName(profile?.name || '');
+                                }}
+                                title="Editar nome"
+                            >
+                                ✏️
+                            </button>
+                        </div>
+                    )}
                     <p>{user?.email}</p>
                     {isAdmin && <span className="admin-badge">Admin</span>}
                 </div>

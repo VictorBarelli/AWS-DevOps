@@ -6,7 +6,7 @@ export default function GroupsSection({ user, onSelectGroup }) {
     const [groups, setGroups] = useState([]);
     const [myGroups, setMyGroups] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeView, setActiveView] = useState('all'); // 'all' | 'my'
+    const [activeView, setActiveView] = useState('my'); // Start with 'my' groups
 
     useEffect(() => {
         loadGroups();
@@ -83,16 +83,16 @@ export default function GroupsSection({ user, onSelectGroup }) {
                 <h3>👥 Comunidades</h3>
                 <div className="groups-toggle">
                     <button
-                        className={activeView === 'all' ? 'active' : ''}
-                        onClick={() => setActiveView('all')}
-                    >
-                        Todas
-                    </button>
-                    <button
                         className={activeView === 'my' ? 'active' : ''}
                         onClick={() => setActiveView('my')}
                     >
-                        Minhas ({myGroups.length})
+                        Meus Grupos ({myGroups.length})
+                    </button>
+                    <button
+                        className={activeView === 'all' ? 'active' : ''}
+                        onClick={() => setActiveView('all')}
+                    >
+                        Todos
                     </button>
                 </div>
             </div>
@@ -100,7 +100,17 @@ export default function GroupsSection({ user, onSelectGroup }) {
             {displayGroups.length === 0 ? (
                 <div className="groups-empty">
                     {activeView === 'my' ? (
-                        <p>Você ainda não entrou em nenhum grupo</p>
+                        <div className="empty-state-centered">
+                            <div className="empty-icon">👥</div>
+                            <h4>Você ainda não está em nenhum grupo</h4>
+                            <p>Entre em um grupo para participar de discussões!</p>
+                            <button
+                                className="join-group-btn"
+                                onClick={() => setActiveView('all')}
+                            >
+                                🔍 Explorar Grupos
+                            </button>
+                        </div>
                     ) : (
                         <p>Nenhum grupo disponível</p>
                     )}

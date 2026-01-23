@@ -561,10 +561,10 @@ export default function App() {
                         <span className="logo-text">GameSwipe</span>
                     </div>
                     <button
-                        className="config-btn"
+                        className="filter-btn"
                         onClick={() => setActiveTab('filters')}
                     >
-                        ⚙️
+                        🔍 Filtros
                     </button>
                 </header>
 

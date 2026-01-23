@@ -20,6 +20,26 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Get groups the current user is a member of
+router.get('/user/my', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const result = await pool.query(`
+            SELECT g.*, 
+                   COUNT(gm2.user_id) as member_count
+            FROM groups g
+            JOIN group_members gm ON g.id = gm.group_id AND gm.user_id = $1
+            LEFT JOIN group_members gm2 ON g.id = gm2.group_id
+            GROUP BY g.id
+            ORDER BY g.name
+        `, [userId]);
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching user groups:', err);
+        res.status(500).json({ error: 'Error fetching user groups' });
+    }
+});
+
 router.get('/:slug', async (req, res) => {
     try {
         const { slug } = req.params;

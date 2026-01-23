@@ -15,10 +15,23 @@ export default function GroupsSection({ user, onSelectGroup }) {
     const loadGroups = async () => {
         try {
             setLoading(true);
-            const [allGroups, userGroups] = await Promise.all([
-                api.getGroups(),
-                api.getMyGroups()
-            ]);
+
+            // Load all groups (doesn't require auth)
+            let allGroups = [];
+            try {
+                allGroups = await api.getGroups();
+            } catch (err) {
+                console.error('Error loading all groups:', err);
+            }
+
+            // Load user groups (requires auth, may fail)
+            let userGroups = [];
+            try {
+                userGroups = await api.getMyGroups();
+            } catch (err) {
+                console.error('Error loading user groups:', err);
+            }
+
             setGroups(allGroups || []);
             setMyGroups(userGroups || []);
         } catch (err) {

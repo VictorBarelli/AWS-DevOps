@@ -24,6 +24,7 @@ router.get('/', async (req, res) => {
 router.get('/user/my', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
+        console.log('Getting groups for user:', userId);
         const result = await pool.query(`
             SELECT g.*, 
                    COUNT(gm2.user_id) as member_count
@@ -33,6 +34,7 @@ router.get('/user/my', authenticateToken, async (req, res) => {
             GROUP BY g.id
             ORDER BY g.name
         `, [userId]);
+        console.log('User groups found:', result.rows.length);
         res.json(result.rows);
     } catch (err) {
         console.error('Error fetching user groups:', err);

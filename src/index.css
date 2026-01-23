@@ -3863,3 +3863,100 @@ body {
   box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
 }
 
+
+/* Larger Chat Container */
+.group-chat-container {
+  max-width: 700px !important;
+  max-height: 90vh !important;
+}
+
+.chat-messages {
+  max-height: 500px !important;
+}
+
+.chat-reviews {
+  max-height: 550px !important;
+}
+
+/* Message Actions */
+.message-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.chat-message:hover .message-actions {
+  opacity: 1;
+}
+
+.msg-action-btn {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.2s;
+}
+
+.msg-action-btn:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.msg-action-btn.delete:hover {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+/* Message Edit Form */
+.message-edit-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.message-edit-form input {
+  flex: 1;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.message-edit-form input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.edit-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.edit-actions button {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.edit-actions button:first-child:hover {
+  background: rgba(34, 197, 94, 0.3);
+}
+
+.edit-actions button:last-child:hover {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+/* Own message styling */
+.chat-message.own .message-content {
+  background: rgba(139, 92, 246, 0.2);
+  border-left: 3px solid var(--accent-primary);
+}
+

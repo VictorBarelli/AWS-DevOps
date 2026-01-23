@@ -2,13 +2,15 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import api from '../services/api';
 
-export default function GroupChat({ group, onClose }) {
+export default function GroupChat({ group, onClose, currentUserId }) {
     const [messages, setMessages] = useState([]);
     const [reviews, setReviews] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(true);
     const [sending, setSending] = useState(false);
     const [activeTab, setActiveTab] = useState('chat');
+    const [editingId, setEditingId] = useState(null);
+    const [editText, setEditText] = useState('');
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
@@ -48,6 +50,42 @@ export default function GroupChat({ group, onClose }) {
         }
     };
 
+    const handleEditMessage = async (messageId) => {
+        if (!editText.trim()) return;
+        try {
+            await api.editMessage(messageId, editText);
+            setMessages(prev => prev.map(msg =>
+                msg.id === messageId ? { ...msg, message: editText } : msg
+            ));
+            setEditingId(null);
+            setEditText('');
+        } catch (err) {
+            console.error('Error editing message:', err);
+            alert('Erro ao editar mensagem');
+        }
+    };
+
+    const handleDeleteMessage = async (messageId) => {
+        if (!confirm('Tem certeza que deseja excluir esta mensagem?')) return;
+        try {
+            await api.deleteMessage(messageId);
+            setMessages(prev => prev.filter(msg => msg.id !== messageId));
+        } catch (err) {
+            console.error('Error deleting message:', err);
+            alert('Erro ao excluir mensagem');
+        }
+    };
+
+    const startEditing = (msg) => {
+        setEditingId(msg.id);
+        setEditText(msg.message);
+    };
+
+    const cancelEditing = () => {
+        setEditingId(null);
+        setEditText('');
+    };
+
     const formatTime = (dateStr) => {
         const date = new Date(dateStr);
         return date.toLocaleString('pt-BR', {
@@ -60,6 +98,10 @@ export default function GroupChat({ group, onClose }) {
 
     const getInitial = (name, email) => {
         return (name || email || '?')[0].toUpperCase();
+    };
+
+    const isOwnMessage = (msg) => {
+        return msg.user_id === currentUserId;
     };
 
     return (
@@ -112,7 +154,7 @@ export default function GroupChat({ group, onClose }) {
                                     </div>
                                 ) : (
                                     messages.slice().reverse().map(msg => (
-                                        <div key={msg.id} className="chat-message">
+                                        <div key={msg.id} className={`chat-message ${isOwnMessage(msg) ? 'own' : ''}`}>
                                             <div className="message-avatar">
                                                 {getInitial(msg.user_name, msg.user_email)}
                                             </div>
@@ -125,7 +167,42 @@ export default function GroupChat({ group, onClose }) {
                                                         {formatTime(msg.created_at)}
                                                     </span>
                                                 </div>
-                                                <p className="message-text">{msg.message}</p>
+                                                {editingId === msg.id ? (
+                                                    <div className="message-edit-form">
+                                                        <input
+                                                            type="text"
+                                                            value={editText}
+                                                            onChange={(e) => setEditText(e.target.value)}
+                                                            autoFocus
+                                                        />
+                                                        <div className="edit-actions">
+                                                            <button onClick={() => handleEditMessage(msg.id)}>✓</button>
+                                                            <button onClick={cancelEditing}>✕</button>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        <p className="message-text">{msg.message}</p>
+                                                        {isOwnMessage(msg) && (
+                                                            <div className="message-actions">
+                                                                <button
+                                                                    className="msg-action-btn"
+                                                                    onClick={() => startEditing(msg)}
+                                                                    title="Editar"
+                                                                >
+                                                                    ✏️
+                                                                </button>
+                                                                <button
+                                                                    className="msg-action-btn delete"
+                                                                    onClick={() => handleDeleteMessage(msg.id)}
+                                                                    title="Excluir"
+                                                                >
+                                                                    🗑️
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
                                     ))

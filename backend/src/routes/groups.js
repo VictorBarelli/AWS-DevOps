@@ -247,4 +247,58 @@ router.get('/:id/reviews', authenticateToken, async (req, res) => {
     }
 });
 
+// Edit a message
+router.put('/messages/:messageId', authenticateToken, async (req, res) => {
+    try {
+        const { messageId } = req.params;
+        const { message } = req.body;
+        const userId = req.user.id;
+
+        // Check if user owns the message
+        const checkResult = await pool.query(
+            'SELECT * FROM group_messages WHERE id = $1 AND user_id = $2',
+            [messageId, userId]
+        );
+
+        if (checkResult.rows.length === 0) {
+            return res.status(403).json({ error: 'You can only edit your own messages' });
+        }
+
+        const result = await pool.query(
+            'UPDATE group_messages SET message = $1 WHERE id = $2 AND user_id = $3 RETURNING *',
+            [message.trim(), messageId, userId]
+        );
+
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error('Error editing message:', err);
+        res.status(500).json({ error: 'Error editing message' });
+    }
+});
+
+// Delete a message
+router.delete('/messages/:messageId', authenticateToken, async (req, res) => {
+    try {
+        const { messageId } = req.params;
+        const userId = req.user.id;
+
+        // Check if user owns the message
+        const checkResult = await pool.query(
+            'SELECT * FROM group_messages WHERE id = $1 AND user_id = $2',
+            [messageId, userId]
+        );
+
+        if (checkResult.rows.length === 0) {
+            return res.status(403).json({ error: 'You can only delete your own messages' });
+        }
+
+        await pool.query('DELETE FROM group_messages WHERE id = $1', [messageId]);
+
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Error deleting message:', err);
+        res.status(500).json({ error: 'Error deleting message' });
+    }
+});
+
 module.exports = router;

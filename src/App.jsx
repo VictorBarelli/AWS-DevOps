@@ -595,7 +595,7 @@ export default function App() {
 
                         {activeTab === 'groups' && (
                             <div className="tab-content groups-tab">
-                                <GroupsSection user={user} />
+                                <GroupsSection user={user} profile={profile} />
                             </div>
                         )}
 

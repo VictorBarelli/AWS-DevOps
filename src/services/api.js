@@ -202,6 +202,19 @@ class ApiService {
     async getGroupReviews(groupId) {
         return this.request(`/api/groups/${groupId}/reviews`);
     }
+
+    async editMessage(messageId, message) {
+        return this.request(`/api/groups/messages/${messageId}`, {
+            method: 'PUT',
+            body: JSON.stringify({ message })
+        });
+    }
+
+    async deleteMessage(messageId) {
+        return this.request(`/api/groups/messages/${messageId}`, {
+            method: 'DELETE'
+        });
+    }
 }
 
 export const api = new ApiService();

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import GroupChat from './GroupChat';
 
-export default function GroupsSection({ user, onSelectGroup }) {
+export default function GroupsSection({ user, profile, onSelectGroup }) {
     const [groups, setGroups] = useState([]);
     const [myGroups, setMyGroups] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -184,6 +184,7 @@ export default function GroupsSection({ user, onSelectGroup }) {
                     <GroupChat
                         group={selectedChatGroup}
                         onClose={() => setSelectedChatGroup(null)}
+                        currentUserId={profile?.id}
                     />
                 )}
             </AnimatePresence>

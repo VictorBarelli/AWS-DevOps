@@ -30,10 +30,11 @@ export default function ShareModal({ game, onClose }) {
         setError(null);
         try {
             await api.postGroupReview(groupId, {
-                gameId: game.id,
-                gameName: game.name,
-                gameImage: game.image,
-                message: message || `Olha esse jogo: ${game.name}!`
+                game_id: game.id,
+                game_name: game.name,
+                game_image: game.image || game.background_image,
+                rating: 5,
+                comment: message || `Recomendo esse jogo: ${game.name}!`
             });
             setSuccess(true);
             setTimeout(() => {

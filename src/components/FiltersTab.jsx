@@ -21,38 +21,7 @@ export default function FiltersTab({
                 <p>Personalize sua experiência de descoberta de jogos</p>
             </div>
 
-            {/* User Info Section */}
-            <div className="user-section">
-                <div className="user-info">
-                    <div className="user-avatar">
-                        {user?.user_metadata?.avatar_url ? (
-                            <img src={user.user_metadata.avatar_url} alt="Avatar" />
-                        ) : (
-                            <div className="avatar-placeholder">
-                                {(profile?.name || user?.email)?.[0]?.toUpperCase()}
-                            </div>
-                        )}
-                    </div>
-                    <div className="user-details">
-                        <h3>{profile?.name || user?.user_metadata?.name || user?.email}</h3>
-                        <p>{user?.email}</p>
-                        {profile?.role === 'admin' && (
-                            <span className="role-badge">Admin</span>
-                        )}
-                    </div>
-                </div>
 
-                <div className="user-actions">
-                    {profile?.role === 'admin' && (
-                        <button className="admin-btn" onClick={onOpenAdmin}>
-                            👑 Admin Panel
-                        </button>
-                    )}
-                    <button className="logout-btn" onClick={onLogout}>
-                        🚪 Sair
-                    </button>
-                </div>
-            </div>
 
             {/* Content Preferences */}
             <div className="preferences-section" style={{ marginBottom: '24px' }}>

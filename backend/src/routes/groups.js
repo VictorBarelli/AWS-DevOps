@@ -179,4 +179,72 @@ router.post('/:id/review', authenticateToken, async (req, res) => {
     }
 });
 
+// Get chat messages for a group
+router.get('/:id/messages', authenticateToken, async (req, res) => {
+    try {
+        const groupId = req.params.id;
+        const result = await pool.query(`
+            SELECT gm.*, u.name as user_name, u.email as user_email
+            FROM group_messages gm
+            JOIN users u ON gm.user_id = u.id
+            WHERE gm.group_id = $1
+            ORDER BY gm.created_at DESC
+            LIMIT 100
+        `, [groupId]);
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching messages:', err);
+        res.status(500).json({ error: 'Error fetching messages' });
+    }
+});
+
+// Post a message to a group
+router.post('/:id/messages', authenticateToken, async (req, res) => {
+    try {
+        const groupId = req.params.id;
+        const { message } = req.body;
+
+        if (!message || message.trim().length === 0) {
+            return res.status(400).json({ error: 'Message is required' });
+        }
+
+        const result = await pool.query(
+            'INSERT INTO group_messages (group_id, user_id, message) VALUES ($1, $2, $3) RETURNING *',
+            [groupId, req.user.id, message.trim()]
+        );
+
+        // Get user info for response
+        const userResult = await pool.query('SELECT name, email FROM users WHERE id = $1', [req.user.id]);
+        const response = {
+            ...result.rows[0],
+            user_name: userResult.rows[0]?.name,
+            user_email: userResult.rows[0]?.email
+        };
+
+        res.status(201).json(response);
+    } catch (err) {
+        console.error('Error posting message:', err);
+        res.status(500).json({ error: 'Error posting message' });
+    }
+});
+
+// Get group reviews (for chat display)
+router.get('/:id/reviews', authenticateToken, async (req, res) => {
+    try {
+        const groupId = req.params.id;
+        const result = await pool.query(`
+            SELECT r.*, u.name as user_name, u.email as user_email
+            FROM reviews r
+            JOIN users u ON r.user_id = u.id
+            WHERE r.group_id = $1
+            ORDER BY r.created_at DESC
+            LIMIT 50
+        `, [groupId]);
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching group reviews:', err);
+        res.status(500).json({ error: 'Error fetching reviews' });
+    }
+});
+
 module.exports = router;

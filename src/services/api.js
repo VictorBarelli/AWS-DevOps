@@ -187,6 +187,21 @@ class ApiService {
             body: JSON.stringify(reviewData)
         });
     }
+
+    async getGroupMessages(groupId) {
+        return this.request(`/api/groups/${groupId}/messages`);
+    }
+
+    async postGroupMessage(groupId, message) {
+        return this.request(`/api/groups/${groupId}/messages`, {
+            method: 'POST',
+            body: JSON.stringify({ message })
+        });
+    }
+
+    async getGroupReviews(groupId) {
+        return this.request(`/api/groups/${groupId}/reviews`);
+    }
 }
 
 export const api = new ApiService();

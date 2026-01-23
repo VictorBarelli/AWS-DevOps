@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
+import GroupChat from './GroupChat';
 
 export default function GroupsSection({ user, onSelectGroup }) {
     const [groups, setGroups] = useState([]);
     const [myGroups, setMyGroups] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeView, setActiveView] = useState('my'); // Start with 'my' groups
+    const [activeView, setActiveView] = useState('my');
+    const [selectedChatGroup, setSelectedChatGroup] = useState(null);
 
     useEffect(() => {
         loadGroups();
@@ -16,7 +18,6 @@ export default function GroupsSection({ user, onSelectGroup }) {
         try {
             setLoading(true);
 
-            // Load all groups (doesn't require auth)
             let allGroups = [];
             try {
                 allGroups = await api.getGroups();
@@ -24,7 +25,6 @@ export default function GroupsSection({ user, onSelectGroup }) {
                 console.error('Error loading all groups:', err);
             }
 
-            // Load user groups (requires auth, may fail)
             let userGroups = [];
             try {
                 userGroups = await api.getMyGroups();
@@ -44,7 +44,7 @@ export default function GroupsSection({ user, onSelectGroup }) {
     const handleJoin = async (groupId) => {
         try {
             await api.joinGroup(groupId);
-            loadGroups(); // Refresh
+            loadGroups();
         } catch (err) {
             console.error('Error joining group:', err);
         }
@@ -53,7 +53,7 @@ export default function GroupsSection({ user, onSelectGroup }) {
     const handleLeave = async (groupId) => {
         try {
             await api.leaveGroup(groupId);
-            loadGroups(); // Refresh
+            loadGroups();
         } catch (err) {
             console.error('Error leaving group:', err);
         }
@@ -77,6 +77,11 @@ export default function GroupsSection({ user, onSelectGroup }) {
             'Horror': '👻'
         };
         return emojis[genre] || '🎮';
+    };
+
+    const openChat = (group, e) => {
+        e.stopPropagation();
+        setSelectedChatGroup(group);
     };
 
     if (loading) {
@@ -137,7 +142,6 @@ export default function GroupsSection({ user, onSelectGroup }) {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             whileHover={{ scale: 1.02 }}
-                            onClick={() => onSelectGroup && onSelectGroup(group)}
                         >
                             <div className="group-emoji">
                                 {getGenreEmoji(group.genre)}
@@ -152,19 +156,37 @@ export default function GroupsSection({ user, onSelectGroup }) {
                                     </span>
                                 </div>
                             </div>
-                            <button
-                                className={`group-join-btn ${isJoined(group.id) ? 'joined' : ''}`}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    isJoined(group.id) ? handleLeave(group.id) : handleJoin(group.id);
-                                }}
-                            >
-                                {isJoined(group.id) ? '✓ Membro' : '+ Entrar'}
-                            </button>
+                            {isJoined(group.id) ? (
+                                <button
+                                    className="group-chat-btn"
+                                    onClick={(e) => openChat(group, e)}
+                                >
+                                    💬 Chat
+                                </button>
+                            ) : (
+                                <button
+                                    className="group-join-btn"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleJoin(group.id);
+                                    }}
+                                >
+                                    + Entrar
+                                </button>
+                            )}
                         </motion.div>
                     ))}
                 </div>
             )}
+
+            <AnimatePresence>
+                {selectedChatGroup && (
+                    <GroupChat
+                        group={selectedChatGroup}
+                        onClose={() => setSelectedChatGroup(null)}
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 }

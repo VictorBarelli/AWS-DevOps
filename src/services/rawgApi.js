@@ -91,8 +91,11 @@ export async function fetchGames({
         // Shuffle the results for random order
         const shuffledGames = shuffleArray(response.data.results);
 
+        // Filter out games without images
+        const gamesWithImages = shuffledGames.filter(game => game.background_image);
+
         return {
-            games: shuffledGames.map(game => ({
+            games: gamesWithImages.map(game => ({
                 id: game.id,
                 name: game.name,
                 image: game.background_image,

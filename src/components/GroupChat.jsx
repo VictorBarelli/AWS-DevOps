@@ -44,7 +44,7 @@ export default function GroupChat({ group, onClose, currentUserId }) {
             setNewMessage('');
         } catch (err) {
             console.error('Error sending message:', err);
-            alert('Erro ao enviar mensagem');
+            window.alert('Erro ao enviar mensagem');
         } finally {
             setSending(false);
         }
@@ -61,18 +61,18 @@ export default function GroupChat({ group, onClose, currentUserId }) {
             setEditText('');
         } catch (err) {
             console.error('Error editing message:', err);
-            alert('Erro ao editar mensagem');
+            window.alert('Erro ao editar mensagem');
         }
     };
 
     const handleDeleteMessage = async (messageId) => {
-        if (!confirm('Tem certeza que deseja excluir esta mensagem?')) return;
+        if (!window.confirm('Tem certeza que deseja excluir esta mensagem?')) return;
         try {
             await api.deleteMessage(messageId);
             setMessages(prev => prev.filter(msg => msg.id !== messageId));
         } catch (err) {
             console.error('Error deleting message:', err);
-            alert('Erro ao excluir mensagem');
+            window.alert('Erro ao excluir mensagem');
         }
     };
 

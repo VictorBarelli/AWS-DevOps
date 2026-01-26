@@ -20,7 +20,7 @@ export default function ProfileTab({ user, profile, onLogout, onOpenAdmin }) {
             window.location.reload();
         } catch (error) {
             console.error('Failed to update profile:', error);
-            alert('Erro ao atualizar perfil');
+            window.alert('Erro ao atualizar perfil');
         } finally {
             setUpdating(false);
             setIsEditing(false);

@@ -3458,6 +3458,7 @@ body {
 .profile-action-btn.logout:hover {
   background: rgba(239, 68, 68, 0.1);
 }
+
 /* Profile Edit Styles */
 .profile-name-container {
   display: flex;
@@ -3511,7 +3512,8 @@ body {
   gap: 5px;
 }
 
-.save-btn, .cancel-btn {
+.save-btn,
+.cancel-btn {
   background: none;
   border: none;
   font-size: 1.2rem;
@@ -3628,7 +3630,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   background: linear-gradient(135deg, #8b5cf6, #7c3aed);
 }
 
@@ -3639,12 +3641,12 @@ body {
 }
 
 .chat-group-info span {
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.85rem;
 }
 
 .chat-close-btn {
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
   width: 32px;
@@ -3659,7 +3661,7 @@ body {
 
 .chat-tabs {
   display: flex;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .chat-tabs button {
@@ -3685,7 +3687,8 @@ body {
   flex-direction: column;
 }
 
-.chat-loading, .chat-empty {
+.chat-loading,
+.chat-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -3725,7 +3728,7 @@ body {
 
 .message-content {
   flex: 1;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   padding: 10px 14px;
   border-radius: 12px;
 }
@@ -3758,14 +3761,14 @@ body {
   display: flex;
   gap: 10px;
   padding: 16px;
-  border-top: 1px solid rgba(255,255,255,0.1);
-  background: rgba(0,0,0,0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .chat-input-form input {
   flex: 1;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 20px;
   padding: 10px 16px;
   color: white;
@@ -3806,7 +3809,7 @@ body {
 }
 
 .review-card {
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   padding: 14px;
   border-radius: 12px;
 }
@@ -3892,7 +3895,7 @@ body {
 }
 
 .msg-action-btn {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   border: none;
   padding: 4px 8px;
   border-radius: 4px;
@@ -3902,7 +3905,7 @@ body {
 }
 
 .msg-action-btn:hover {
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .msg-action-btn.delete:hover {
@@ -3918,8 +3921,8 @@ body {
 
 .message-edit-form input {
   flex: 1;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   padding: 6px 10px;
   color: white;
@@ -3937,7 +3940,7 @@ body {
 }
 
 .edit-actions button {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   border: none;
   color: white;
   width: 28px;
@@ -3960,3 +3963,158 @@ body {
   border-left: 3px solid var(--accent-primary);
 }
 
+/* ==========================================
+   Header Actions
+   ========================================== */
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-btn {
+  background: rgba(139, 92, 246, 0.2) !important;
+  border: 1px solid var(--accent-primary) !important;
+}
+
+.settings-btn:hover {
+  background: var(--accent-primary) !important;
+}
+
+/* ==========================================
+   Settings Tab Styles
+   ========================================== */
+
+.settings-tab {
+  padding: 0;
+  overflow-y: auto;
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  background: var(--bg-primary);
+  z-index: 10;
+}
+
+.settings-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.settings-header .back-btn {
+  background: none;
+  border: none;
+  color: var(--accent-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.settings-header .back-btn:hover {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.settings-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.settings-section {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid var(--border-color);
+}
+
+.settings-section h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.settings-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.settings-item:last-child {
+  border-bottom: none;
+}
+
+.settings-item.clickable {
+  cursor: pointer;
+  padding: 12px;
+  margin: 0 -12px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.settings-item.clickable:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.settings-label {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.settings-value {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.settings-arrow {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.danger-section {
+  background: rgba(239, 68, 68, 0.05);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.settings-logout-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border: none;
+  color: white;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.settings-logout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+}
+
+.settings-logout-btn:active {
+  transform: translateY(0);
+}

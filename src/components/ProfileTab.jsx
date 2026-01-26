@@ -125,9 +125,6 @@ export default function ProfileTab({ user, profile, onLogout, onOpenAdmin }) {
                                 🛡️ Admin Panel
                             </button>
                         )}
-                        <button className="profile-action-btn logout" onClick={onLogout}>
-                            🚪 Sair
-                        </button>
                     </div>
                 </div>
             )}

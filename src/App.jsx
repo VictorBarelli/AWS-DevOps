@@ -12,6 +12,7 @@ import FiltersTab from './components/FiltersTab';
 import ForYouTab from './components/ForYouTab';
 import ShareModal from './components/ShareModal';
 import ProfileTab from './components/ProfileTab';
+import SettingsTab from './components/SettingsTab';
 import GroupsSection from './components/GroupsSection';
 import { fetchGames, fetchGenres } from './services/rawgApi';
 import cognitoAuth from './services/cognitoAuth';
@@ -560,12 +561,22 @@ export default function App() {
                         <span className="logo-icon">🎮</span>
                         <span className="logo-text">GameSwipe</span>
                     </div>
-                    <button
-                        className="filter-btn"
-                        onClick={() => setActiveTab('filters')}
-                    >
-                        🔍 Filtros
-                    </button>
+                    <div className="header-actions">
+                        {activeTab === 'profile' && (
+                            <button
+                                className="filter-btn settings-btn"
+                                onClick={() => setActiveTab('settings')}
+                            >
+                                ⚙️ Configurações
+                            </button>
+                        )}
+                        <button
+                            className="filter-btn"
+                            onClick={() => setActiveTab('filters')}
+                        >
+                            🔍 Filtros
+                        </button>
+                    </div>
                 </header>
 
                 <div className="main-content">
@@ -622,6 +633,15 @@ export default function App() {
                                 profile={profile}
                                 onLogout={handleLogout}
                                 onOpenAdmin={() => setShowAdmin(true)}
+                            />
+                        )}
+
+                        {activeTab === 'settings' && (
+                            <SettingsTab
+                                user={user}
+                                profile={profile}
+                                onLogout={handleLogout}
+                                onGoBack={() => setActiveTab('profile')}
                             />
                         )}
                     </AnimatePresence>

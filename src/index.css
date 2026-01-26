@@ -3989,6 +3989,26 @@ body {
 .settings-tab {
   padding: 0;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-primary) var(--bg-secondary);
+}
+
+.settings-tab::-webkit-scrollbar {
+  width: 8px;
+}
+
+.settings-tab::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 4px;
+}
+
+.settings-tab::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 4px;
+}
+
+.settings-tab::-webkit-scrollbar-thumb:hover {
+  background: #9f75f6;
 }
 
 .settings-header {

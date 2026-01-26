@@ -552,12 +552,14 @@ export default function App() {
                                 ⚙️ Configurações
                             </button>
                         )}
-                        <button
-                            className="filter-btn"
-                            onClick={() => setActiveTab('filters')}
-                        >
-                            🔍 Filtros
-                        </button>
+                        {activeTab === 'home' && (
+                            <button
+                                className="filter-btn"
+                                onClick={() => setActiveTab('filters')}
+                            >
+                                🔍 Filtros
+                            </button>
+                        )}
                     </div>
                 </header>
 

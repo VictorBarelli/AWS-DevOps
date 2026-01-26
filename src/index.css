@@ -3988,7 +3988,10 @@ body {
 
 .settings-tab {
   padding: 0;
+  padding-bottom: 120px;
   overflow-y: auto;
+  height: 100%;
+  max-height: calc(100vh - 60px);
   scrollbar-width: thin;
   scrollbar-color: var(--accent-primary) var(--bg-secondary);
 }

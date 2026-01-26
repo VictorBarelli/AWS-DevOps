@@ -81,6 +81,20 @@ async function initDatabase() {
       )
     `);
 
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS custom_games (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        image TEXT,
+        genres TEXT[],
+        rating DECIMAL(3,2) DEFAULT 4.0,
+        description TEXT,
+        released VARCHAR(20),
+        created_by INTEGER REFERENCES users(id),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
     const defaultGroups = [
       { name: 'Action Lovers', slug: 'action', genre: 'Action', desc: 'Para fãs de jogos de ação e adrenalina' },
       { name: 'RPG Masters', slug: 'rpg', genre: 'RPG', desc: 'Comunidade de amantes de RPGs' },

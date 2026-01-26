@@ -128,6 +128,15 @@ class ApiService {
         return this.request('/health');
     }
 
+    async getPublicCustomGames() {
+        try {
+            const data = await this.request('/api/games');
+            return data.games || [];
+        } catch {
+            return [];
+        }
+    }
+
     async getReviewsFeed(page = 1) {
         return this.request(`/api/reviews/feed?page=${page}`);
     }
@@ -214,6 +223,28 @@ class ApiService {
         return this.request(`/api/groups/messages/${messageId}`, {
             method: 'DELETE'
         });
+    }
+
+    // Admin - Custom Games
+    async getCustomGames() {
+        return this.request('/api/admin/custom-games');
+    }
+
+    async createCustomGame(gameData) {
+        return this.request('/api/admin/custom-games', {
+            method: 'POST',
+            body: JSON.stringify(gameData)
+        });
+    }
+
+    async deleteCustomGame(gameId) {
+        return this.request(`/api/admin/custom-games/${gameId}`, {
+            method: 'DELETE'
+        });
+    }
+
+    async getAllMatches() {
+        return this.request('/api/admin/all-matches');
     }
 }
 

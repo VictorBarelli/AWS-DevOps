@@ -25,6 +25,7 @@ app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/recommendations', require('./routes/recommendations'));
 app.use('/api/groups', require('./routes/groups'));
 app.use('/api/profile', require('./routes/profile'));
+app.use('/api/games', require('./routes/games'));
 
 app.use((err, req, res, next) => {
     console.error(err.stack);

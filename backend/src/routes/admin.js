@@ -59,4 +59,67 @@ router.get('/stats', async (req, res) => {
     }
 });
 
+// Get all matches from all users
+router.get('/all-matches', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT m.*, u.name as user_name, u.email as user_email
+            FROM matches m
+            JOIN users u ON m.user_id = u.id
+            ORDER BY m.created_at DESC
+            LIMIT 100
+        `);
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get all custom games
+router.get('/custom-games', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT cg.*, u.name as created_by_name
+            FROM custom_games cg
+            LEFT JOIN users u ON cg.created_by = u.id
+            ORDER BY cg.created_at DESC
+        `);
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Create custom game
+router.post('/custom-games', async (req, res) => {
+    try {
+        const { name, image, genres, rating, description, released } = req.body;
+
+        if (!name) {
+            return res.status(400).json({ error: 'Nome é obrigatório' });
+        }
+
+        const result = await pool.query(`
+            INSERT INTO custom_games (name, image, genres, rating, description, released, created_by)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            RETURNING *
+        `, [name, image || null, genres || [], rating || 4.0, description || null, released || null, req.user.id]);
+
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Delete custom game
+router.delete('/custom-games/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await pool.query('DELETE FROM custom_games WHERE id = $1', [id]);
+        res.json({ message: 'Jogo excluído' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;

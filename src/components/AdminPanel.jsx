@@ -6,9 +6,20 @@ import api from '../services/api';
 export default function AdminPanel({ user, onClose }) {
     const [users, setUsers] = useState([]);
     const [stats, setStats] = useState([]);
+    const [customGames, setCustomGames] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('users');
     const [error, setError] = useState('');
+
+    // Form state for new game
+    const [newGame, setNewGame] = useState({
+        name: '',
+        image: '',
+        genres: '',
+        rating: 4.0,
+        description: ''
+    });
+    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         loadData();
@@ -17,12 +28,14 @@ export default function AdminPanel({ user, onClose }) {
     const loadData = async () => {
         try {
             setLoading(true);
-            const [usersData, statsData] = await Promise.all([
+            const [usersData, statsData, gamesData] = await Promise.all([
                 api.getAllUsers(),
-                api.getMatchStats()
+                api.getMatchStats(),
+                api.getCustomGames().catch(() => [])
             ]);
             setUsers(usersData || []);
             setStats(statsData || []);
+            setCustomGames(gamesData || []);
         } catch (err) {
             console.error('Error loading admin data:', err);
             setError('Erro ao carregar dados');
@@ -52,6 +65,47 @@ export default function AdminPanel({ user, onClose }) {
         } catch (err) {
             console.error('Error deleting user:', err);
             setError('Erro ao excluir usuário');
+        }
+    };
+
+    const handleAddGame = async (e) => {
+        e.preventDefault();
+        if (!newGame.name.trim()) {
+            setError('Nome do jogo é obrigatório');
+            return;
+        }
+
+        setSaving(true);
+        try {
+            const gameData = {
+                name: newGame.name.trim(),
+                image: newGame.image.trim() || null,
+                genres: newGame.genres ? newGame.genres.split(',').map(g => g.trim()) : [],
+                rating: parseFloat(newGame.rating) || 4.0,
+                description: newGame.description.trim() || null
+            };
+
+            const created = await api.createCustomGame(gameData);
+            setCustomGames([created, ...customGames]);
+            setNewGame({ name: '', image: '', genres: '', rating: 4.0, description: '' });
+            setError('');
+        } catch (err) {
+            console.error('Error creating game:', err);
+            setError('Erro ao criar jogo');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleDeleteGame = async (gameId) => {
+        if (!window.confirm('Tem certeza que deseja excluir este jogo?')) return;
+
+        try {
+            await api.deleteCustomGame(gameId);
+            setCustomGames(customGames.filter(g => g.id !== gameId));
+        } catch (err) {
+            console.error('Error deleting game:', err);
+            setError('Erro ao excluir jogo');
         }
     };
 
@@ -90,13 +144,19 @@ export default function AdminPanel({ user, onClose }) {
                         className={`admin-tab ${activeTab === 'users' ? 'active' : ''}`}
                         onClick={() => setActiveTab('users')}
                     >
-                        👥 Usuários ({users.length})
+                        👥 Usuários
+                    </button>
+                    <button
+                        className={`admin-tab ${activeTab === 'games' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('games')}
+                    >
+                        🎮 Jogos
                     </button>
                     <button
                         className={`admin-tab ${activeTab === 'stats' ? 'active' : ''}`}
                         onClick={() => setActiveTab('stats')}
                     >
-                        📊 Estatísticas
+                        📊 Stats
                     </button>
                 </div>
 
@@ -155,6 +215,83 @@ export default function AdminPanel({ user, onClose }) {
                                         ))}
                                     </tbody>
                                 </table>
+                            )}
+                        </div>
+                    ) : activeTab === 'games' ? (
+                        <div className="admin-games">
+                            {/* Add Game Form */}
+                            <form className="add-game-form" onSubmit={handleAddGame}>
+                                <h3>➕ Adicionar Jogo</h3>
+                                <div className="form-row">
+                                    <input
+                                        type="text"
+                                        placeholder="Nome do jogo *"
+                                        value={newGame.name}
+                                        onChange={(e) => setNewGame({ ...newGame, name: e.target.value })}
+                                        required
+                                    />
+                                    <input
+                                        type="url"
+                                        placeholder="URL da imagem"
+                                        value={newGame.image}
+                                        onChange={(e) => setNewGame({ ...newGame, image: e.target.value })}
+                                    />
+                                </div>
+                                <div className="form-row">
+                                    <input
+                                        type="text"
+                                        placeholder="Gêneros (separados por vírgula)"
+                                        value={newGame.genres}
+                                        onChange={(e) => setNewGame({ ...newGame, genres: e.target.value })}
+                                    />
+                                    <input
+                                        type="number"
+                                        placeholder="Rating"
+                                        min="0"
+                                        max="5"
+                                        step="0.1"
+                                        value={newGame.rating}
+                                        onChange={(e) => setNewGame({ ...newGame, rating: e.target.value })}
+                                    />
+                                </div>
+                                <textarea
+                                    placeholder="Descrição"
+                                    value={newGame.description}
+                                    onChange={(e) => setNewGame({ ...newGame, description: e.target.value })}
+                                    rows={2}
+                                />
+                                <button type="submit" disabled={saving} className="add-game-btn">
+                                    {saving ? 'Salvando...' : '💾 Salvar Jogo'}
+                                </button>
+                            </form>
+
+                            {/* Games List */}
+                            <h3>📋 Jogos Customizados ({customGames.length})</h3>
+                            {customGames.length === 0 ? (
+                                <p className="admin-empty">Nenhum jogo customizado ainda</p>
+                            ) : (
+                                <div className="games-list">
+                                    {customGames.map(game => (
+                                        <div key={game.id} className="game-item">
+                                            {game.image && (
+                                                <img src={game.image} alt="" className="game-thumb" />
+                                            )}
+                                            <div className="game-info">
+                                                <span className="game-name">{game.name}</span>
+                                                <span className="game-genres">
+                                                    {game.genres?.join(', ') || 'Sem gênero'}
+                                                </span>
+                                            </div>
+                                            <span className="game-rating">⭐ {game.rating}</span>
+                                            <button
+                                                className="admin-delete-btn"
+                                                onClick={() => handleDeleteGame(game.id)}
+                                            >
+                                                🗑️
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
                             )}
                         </div>
                     ) : (

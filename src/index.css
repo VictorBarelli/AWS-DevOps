@@ -4141,3 +4141,134 @@ body {
 .settings-logout-btn:active {
   transform: translateY(0);
 }
+
+/* ==========================================
+   Admin Games Styles
+   ========================================== */
+
+.admin-games {
+  padding: 16px 0;
+}
+
+.admin-games h3 {
+  margin: 0 0 16px;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.add-game-form {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border-color);
+}
+
+.add-game-form h3 {
+  margin-bottom: 12px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.form-row input {
+  flex: 1;
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.form-row input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.add-game-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  resize: none;
+  margin-bottom: 12px;
+}
+
+.add-game-form textarea:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.add-game-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--accent-primary) 0%, #7c3aed 100%);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-game-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.add-game-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.games-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.game-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+
+.game-thumb {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.game-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.game-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.game-genres {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.game-rating {
+  color: #fbbf24;
+  font-weight: 600;
+}

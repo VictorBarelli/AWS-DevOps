@@ -93,13 +93,7 @@ export default function App() {
                         try {
                             api.setToken(idToken);
                             const userMatches = await api.getMatches();
-                            setMatches((userMatches || []).map(m => ({
-                                id: m.game_id,
-                                name: m.game_name,
-                                image: m.game_image,
-                                genres: m.game_genres,
-                                rating: m.game_rating
-                            })));
+                            setMatches(userMatches || []);
                         } catch (e) {
                             console.log('No matches found');
                         }
@@ -149,13 +143,7 @@ export default function App() {
                         try {
                             api.setToken(cognitoSession.getIdToken().getJwtToken());
                             const userMatches = await api.getMatches();
-                            setMatches((userMatches || []).map(m => ({
-                                id: m.game_id,
-                                name: m.game_name,
-                                image: m.game_image,
-                                genres: m.game_genres,
-                                rating: m.game_rating
-                            })));
+                            setMatches(userMatches || []);
                         } catch (e) {
                             console.log('No matches found');
                         }
@@ -211,13 +199,7 @@ export default function App() {
                 // Load matches from API
                 try {
                     const userMatches = await api.getMatches();
-                    setMatches((userMatches || []).map(m => ({
-                        id: m.game_id,
-                        name: m.game_name,
-                        image: m.game_image,
-                        genres: m.game_genres,
-                        rating: m.game_rating
-                    })));
+                    setMatches(userMatches || []);
                 } catch (e) {
                     console.log('No matches found');
                 }

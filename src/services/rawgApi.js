@@ -91,11 +91,16 @@ export async function fetchGames({
         // Shuffle the results for random order
         const shuffledGames = shuffleArray(response.data.results);
 
-        // Filter out games without images
-        const gamesWithImages = shuffledGames.filter(game => game.background_image);
+        // Regex to detect Chinese/Japanese/Korean characters
+        const asianCharRegex = /[\u3000-\u303F\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\uAC00-\uD7AF]/;
+
+        // Filter out games without images and games with Asian character names
+        const filteredGames = shuffledGames.filter(game =>
+            game.background_image && !asianCharRegex.test(game.name)
+        );
 
         return {
-            games: gamesWithImages.map(game => ({
+            games: filteredGames.map(game => ({
                 id: game.id,
                 name: game.name,
                 image: game.background_image,

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { subscribeToPushNotifications, checkSubscriptionStatus, requestNotificationPermission } from '../services/notifications';
 
 export default function SettingsTab({ user, profile, onLogout, onGoBack }) {
     const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -7,6 +8,10 @@ export default function SettingsTab({ user, profile, onLogout, onGoBack }) {
     const [installStatus, setInstallStatus] = useState('');
     const [isIOS, setIsIOS] = useState(false);
     const [showIOSInstructions, setShowIOSInstructions] = useState(false);
+
+    // Notifications state
+    const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+    const [notificationStatus, setNotificationStatus] = useState('');
 
     useEffect(() => {
         // Check if iOS
@@ -16,27 +21,26 @@ export default function SettingsTab({ user, profile, onLogout, onGoBack }) {
         // Check if already installed
         if (window.matchMedia('(display-mode: standalone)').matches) {
             setIsInstalled(true);
-            return;
-        }
-
-        // Also check for iOS standalone mode
-        if (window.navigator.standalone === true) {
+        } else if (window.navigator.standalone === true) {
             setIsInstalled(true);
-            return;
         }
 
-        // Listen for the beforeinstallprompt event (Android/Chrome)
+        // Listen for install prompt
         const handler = (e) => {
             e.preventDefault();
             setDeferredPrompt(e);
         };
-
         window.addEventListener('beforeinstallprompt', handler);
 
-        // Check if installed
+        // Check installed
         window.addEventListener('appinstalled', () => {
             setIsInstalled(true);
             setInstallStatus('Instalado com sucesso!');
+        });
+
+        // Check notification subscription
+        checkSubscriptionStatus().then(isSubscribed => {
+            setNotificationsEnabled(isSubscribed);
         });
 
         return () => {
@@ -45,28 +49,48 @@ export default function SettingsTab({ user, profile, onLogout, onGoBack }) {
     }, []);
 
     const handleInstall = async () => {
-        // For iOS, show instructions
         if (isIOS) {
             setShowIOSInstructions(true);
             return;
         }
-
-        // For Android/Chrome, use the native prompt
         if (deferredPrompt) {
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
-
             if (outcome === 'accepted') {
                 setIsInstalled(true);
                 setInstallStatus('Instalado com sucesso!');
             } else {
                 setInstallStatus('Instalação cancelada');
             }
-
             setDeferredPrompt(null);
         } else {
-            // Fallback for browsers that don't support beforeinstallprompt
             setInstallStatus('Abra o menu do navegador (⋮) e selecione "Instalar app" ou "Adicionar à tela inicial"');
+        }
+    };
+
+    const handleToggleNotifications = async () => {
+        if (notificationsEnabled) {
+            // Unsubscribe logic (optional, for now just toggle visual state or clear)
+            // unsubscribeFromPushNotifications();
+            setNotificationStatus('Desative nas configurações do navegador/sistema.');
+            return;
+        }
+
+        try {
+            setNotificationStatus('Solicitando permissão...');
+            await requestNotificationPermission();
+
+            setNotificationStatus('Ativando...');
+            await subscribeToPushNotifications();
+
+            setNotificationsEnabled(true);
+            setNotificationStatus('Notificações ativadas! 🎉');
+
+            setTimeout(() => setNotificationStatus(''), 3000);
+        } catch (error) {
+            console.error(error);
+            setNotificationStatus('Erro ao ativar: ' + error.message);
+            setNotificationsEnabled(false);
         }
     };
 
@@ -120,7 +144,6 @@ export default function SettingsTab({ user, profile, onLogout, onGoBack }) {
                                 <p className="install-status">{installStatus}</p>
                             )}
 
-                            {/* iOS Instructions Modal */}
                             {showIOSInstructions && (
                                 <div className="ios-instructions">
                                     <h4>📱 Como instalar no iPhone:</h4>
@@ -149,10 +172,18 @@ export default function SettingsTab({ user, profile, onLogout, onGoBack }) {
 
                 <div className="settings-section">
                     <h3>Preferências</h3>
-                    <div className="settings-item clickable">
+                    <div className="settings-item clickable" onClick={handleToggleNotifications}>
                         <span className="settings-label">🔔 Notificações</span>
-                        <span className="settings-arrow">→</span>
+                        <span className="settings-value">
+                            {notificationsEnabled ? '✅ Ativado' : '❌ Desativado'}
+                        </span>
                     </div>
+                    {notificationStatus && (
+                        <p className="install-status" style={{ textAlign: 'right', marginTop: '-10px', marginBottom: '10px' }}>
+                            {notificationStatus}
+                        </p>
+                    )}
+
                     <div className="settings-item clickable">
                         <span className="settings-label">🎨 Tema</span>
                         <span className="settings-arrow">→</span>
@@ -167,7 +198,7 @@ export default function SettingsTab({ user, profile, onLogout, onGoBack }) {
                     <h3>Sobre</h3>
                     <div className="settings-item">
                         <span className="settings-label">Versão</span>
-                        <span className="settings-value">1.0.0</span>
+                        <span className="settings-value">1.1.0</span>
                     </div>
                     <div className="settings-item clickable">
                         <span className="settings-label">📜 Termos de Uso</span>

@@ -1,6 +1,56 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 export default function SettingsTab({ user, profile, onLogout, onGoBack }) {
+    const [deferredPrompt, setDeferredPrompt] = useState(null);
+    const [isInstalled, setIsInstalled] = useState(false);
+    const [installStatus, setInstallStatus] = useState('');
+
+    useEffect(() => {
+        // Check if already installed
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            setIsInstalled(true);
+            return;
+        }
+
+        // Listen for the beforeinstallprompt event
+        const handler = (e) => {
+            e.preventDefault();
+            setDeferredPrompt(e);
+        };
+
+        window.addEventListener('beforeinstallprompt', handler);
+
+        // Check if installed
+        window.addEventListener('appinstalled', () => {
+            setIsInstalled(true);
+            setInstallStatus('Instalado com sucesso!');
+        });
+
+        return () => {
+            window.removeEventListener('beforeinstallprompt', handler);
+        };
+    }, []);
+
+    const handleInstall = async () => {
+        if (!deferredPrompt) {
+            setInstallStatus('Use o menu do navegador para instalar');
+            return;
+        }
+
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+
+        if (outcome === 'accepted') {
+            setIsInstalled(true);
+            setInstallStatus('Instalado com sucesso!');
+        } else {
+            setInstallStatus('Instalação cancelada');
+        }
+
+        setDeferredPrompt(null);
+    };
+
     return (
         <motion.div
             className="tab-content settings-tab"
@@ -27,6 +77,33 @@ export default function SettingsTab({ user, profile, onLogout, onGoBack }) {
                         <span className="settings-label">Nome</span>
                         <span className="settings-value">{profile?.name || 'Não definido'}</span>
                     </div>
+                </div>
+
+                {/* PWA Install Section */}
+                <div className="settings-section install-section">
+                    <h3>Aplicativo</h3>
+                    {isInstalled ? (
+                        <div className="settings-item">
+                            <span className="settings-label">📱 GameSwipe</span>
+                            <span className="settings-value installed">✓ Instalado</span>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="settings-item">
+                                <span className="settings-label">📱 Instalar App</span>
+                                <span className="settings-value">Acesse mais rápido</span>
+                            </div>
+                            <button className="install-app-btn" onClick={handleInstall}>
+                                📲 Instalar GameSwipe
+                            </button>
+                            {installStatus && (
+                                <p className="install-status">{installStatus}</p>
+                            )}
+                            <p className="install-hint">
+                                💡 No iPhone, use Safari e toque em "Compartilhar" → "Adicionar à Tela de Início"
+                            </p>
+                        </>
+                    )}
                 </div>
 
                 <div className="settings-section">

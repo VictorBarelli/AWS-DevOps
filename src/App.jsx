@@ -14,7 +14,6 @@ import ShareModal from './components/ShareModal';
 import ProfileTab from './components/ProfileTab';
 import SettingsTab from './components/SettingsTab';
 import GroupsSection from './components/GroupsSection';
-import InstallPrompt from './components/InstallPrompt';
 import { fetchGames, fetchGenres } from './services/rawgApi';
 import cognitoAuth from './services/cognitoAuth';
 import api from './services/api';
@@ -670,9 +669,6 @@ export default function App() {
                     />
                 )}
             </AnimatePresence>
-
-            {/* PWA Install Prompt */}
-            <InstallPrompt />
         </>
     );
 }

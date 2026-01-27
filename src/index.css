@@ -4148,6 +4148,50 @@ body {
   border: 1px solid var(--border-color);
 }
 
+.install-section {
+  background: linear-gradient(145deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.05));
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.install-app-btn {
+  width: 100%;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, var(--accent-primary) 0%, #7c3aed 100%);
+  border: none;
+  color: white;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 12px;
+}
+
+.install-app-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+}
+
+.install-status {
+  color: var(--accent-primary);
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.install-hint {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-align: center;
+  margin-top: 12px;
+  line-height: 1.4;
+}
+
+.settings-value.installed {
+  color: var(--accent-like);
+  font-weight: 600;
+}
+
 .settings-section h3 {
   font-size: 0.85rem;
   font-weight: 600;

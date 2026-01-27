@@ -321,7 +321,7 @@ body {
    ========================================== */
 .action-buttons-overlay {
   position: absolute;
-  bottom: 100px;
+  bottom: 20px;
   left: 0;
   right: 0;
   display: flex;

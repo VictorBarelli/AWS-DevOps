@@ -126,8 +126,8 @@ export default function SettingsTab({ user, profile, onLogout, onGoBack }) {
                                     <h4>📱 Como instalar no iPhone:</h4>
                                     <ol>
                                         <li>Toque no botão <strong>Compartilhar</strong> (ícone quadrado com seta ↑)</li>
-                                        <li>Role para baixo e toque em <strong>"Adicionar à Tela de Início"</strong></li>
-                                        <li>Toque em <strong>"Adicionar"</strong> no canto superior direito</li>
+                                        <li>Role para baixo e toque em <strong>&quot;Adicionar à Tela de Início&quot;</strong></li>
+                                        <li>Toque em <strong>&quot;Adicionar&quot;</strong> no canto superior direito</li>
                                     </ol>
                                     <button
                                         className="ios-instructions-close"

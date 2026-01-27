@@ -179,23 +179,21 @@ body {
   justify-content: center;
 }
 
-/* Home Tab Layout - ensure buttons are visible */
+/* Home Tab Layout */
 .home-tab {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 140px);
-  padding: 10px 16px 0 16px;
+  min-height: calc(100vh - 140px);
+  padding: 20px;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
 .card-container {
   position: relative;
   width: 100%;
-  height: 55vh;
-  max-height: 55vh;
-  flex-shrink: 0;
-  margin-bottom: 10px;
+  flex: 1;
+  min-height: 400px;
+  margin-bottom: var(--spacing-md);
   z-index: 1;
 }
 
@@ -322,26 +320,23 @@ body {
 .action-buttons {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 15px;
-  padding: 10px 0;
-  padding-bottom: 80px;
+  gap: 30px;
+  margin-top: auto;
+  padding-bottom: 20px;
   position: relative;
   z-index: 10;
-  flex-shrink: 0;
-  background: var(--bg-primary);
 }
 
 .action-btn {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   border: 1px solid;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 24px;
   transition: var(--transition-normal);
   background: #1a1a1e;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -4610,4 +4605,38 @@ body {
 .install-btn-confirm:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+}
+
+/* ==========================================
+   Mobile-Only Styles for Home Tab
+   ========================================== */
+@media (max-width: 768px) {
+  .home-tab {
+    height: calc(100vh - 140px);
+    padding: 10px 16px 0 16px;
+    overflow: hidden;
+  }
+
+  .card-container {
+    flex: none;
+    height: 55vh;
+    max-height: 55vh;
+    min-height: auto;
+    margin-bottom: 10px;
+  }
+
+  .action-buttons {
+    gap: 15px;
+    padding: 10px 0;
+    padding-bottom: 85px;
+    margin-top: 0;
+    flex-shrink: 0;
+    background: var(--bg-primary);
+  }
+
+  .action-btn {
+    width: 52px;
+    height: 52px;
+    font-size: 20px;
+  }
 }

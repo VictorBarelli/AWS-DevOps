@@ -316,7 +316,110 @@ body {
   transform: rotate(15deg);
 }
 
-/* Action Buttons */
+/* ==========================================
+   Action Buttons Overlay (on top of game card)
+   ========================================== */
+.action-buttons-overlay {
+  position: absolute;
+  bottom: 100px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  z-index: 100;
+  padding: 0 20px;
+}
+
+.action-btn-overlay {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  transition: all 0.2s ease;
+  background: rgba(26, 26, 30, 0.9);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.action-btn-overlay:hover {
+  transform: scale(1.15);
+}
+
+.action-btn-overlay:active {
+  transform: scale(0.95);
+}
+
+.action-btn-overlay.nope {
+  color: var(--accent-nope);
+  border-color: var(--accent-nope);
+}
+
+.action-btn-overlay.nope:hover {
+  background: var(--accent-nope);
+  color: white;
+}
+
+.action-btn-overlay.like {
+  color: var(--accent-like);
+  border-color: var(--accent-like);
+  width: 60px;
+  height: 60px;
+  font-size: 26px;
+}
+
+.action-btn-overlay.like:hover {
+  background: var(--accent-like);
+  color: white;
+}
+
+.action-btn-overlay.super {
+  color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.action-btn-overlay.super:hover {
+  background: #3b82f6;
+  color: white;
+}
+
+.action-btn-overlay.undo {
+  color: #f59e0b;
+  border-color: #f59e0b;
+  width: 44px;
+  height: 44px;
+  font-size: 18px;
+}
+
+.action-btn-overlay.undo:hover {
+  background: #f59e0b;
+  color: white;
+}
+
+.action-btn-overlay.undo.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.action-btn-overlay.share {
+  color: #a855f7;
+  border-color: #a855f7;
+  width: 44px;
+  height: 44px;
+  font-size: 18px;
+}
+
+.action-btn-overlay.share:hover {
+  background: #a855f7;
+  color: white;
+}
+
+/* Action Buttons (legacy - keeping for other components)
 .action-buttons {
   display: flex;
   justify-content: center;

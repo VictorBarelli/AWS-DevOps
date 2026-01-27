@@ -52,45 +52,46 @@ export default function HomeTab({
                         />
                     ))}
                 </AnimatePresence>
-            </div>
 
-            <div className="action-buttons">
-                <button
-                    className={`action-btn undo ${!canUndo ? 'disabled' : ''}`}
-                    onClick={onUndo}
-                    disabled={!canUndo}
-                    title="Voltar"
-                >
-                    ↩
-                </button>
-                <button
-                    className="action-btn nope"
-                    onClick={() => onButtonSwipe('left')}
-                    title="Não curti"
-                >
-                    ✕
-                </button>
-                <button
-                    className="action-btn super"
-                    onClick={() => onSuperLike && onSuperLike(currentCards[0])}
-                    title="Super Like!"
-                >
-                    ⭐
-                </button>
-                <button
-                    className="action-btn like"
-                    onClick={() => onButtonSwipe('right')}
-                    title="Quero jogar!"
-                >
-                    ♥
-                </button>
-                <button
-                    className="action-btn share"
-                    onClick={() => onShare && onShare(currentCards[0])}
-                    title="Compartilhar"
-                >
-                    📤
-                </button>
+                {/* Action Buttons Overlay */}
+                <div className="action-buttons-overlay">
+                    <button
+                        className={`action-btn-overlay undo ${!canUndo ? 'disabled' : ''}`}
+                        onClick={onUndo}
+                        disabled={!canUndo}
+                        title="Voltar"
+                    >
+                        ↩
+                    </button>
+                    <button
+                        className="action-btn-overlay nope"
+                        onClick={() => onButtonSwipe('left')}
+                        title="Não curti"
+                    >
+                        ✕
+                    </button>
+                    <button
+                        className="action-btn-overlay super"
+                        onClick={() => onSuperLike && onSuperLike(currentCards[0])}
+                        title="Super Like!"
+                    >
+                        ⭐
+                    </button>
+                    <button
+                        className="action-btn-overlay like"
+                        onClick={() => onButtonSwipe('right')}
+                        title="Quero jogar!"
+                    >
+                        ♥
+                    </button>
+                    <button
+                        className="action-btn-overlay share"
+                        onClick={() => onShare && onShare(currentCards[0])}
+                        title="Compartilhar"
+                    >
+                        📤
+                    </button>
+                </div>
             </div>
         </div>
     );

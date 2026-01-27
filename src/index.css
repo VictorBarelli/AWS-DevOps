@@ -391,9 +391,6 @@ body {
 .action-btn-overlay.undo {
   color: #f59e0b;
   border-color: #f59e0b;
-  width: 44px;
-  height: 44px;
-  font-size: 18px;
 }
 
 .action-btn-overlay.undo:hover {
@@ -409,9 +406,6 @@ body {
 .action-btn-overlay.share {
   color: #a855f7;
   border-color: #a855f7;
-  width: 44px;
-  height: 44px;
-  font-size: 18px;
 }
 
 .action-btn-overlay.share:hover {

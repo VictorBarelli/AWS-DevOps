@@ -179,13 +179,22 @@ body {
   justify-content: center;
 }
 
+/* Home Tab Layout - ensure buttons are visible */
+.home-tab {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 180px);
+  padding: 10px 16px;
+  box-sizing: border-box;
+}
+
 .card-container {
   position: relative;
   width: 100%;
   flex: 1;
-  /* Take remaining space */
+  max-height: calc(100vh - 320px);
+  min-height: 300px;
   margin-bottom: var(--spacing-md);
-  /* Space between card and buttons */
   z-index: 1;
 }
 
@@ -312,11 +321,12 @@ body {
 .action-buttons {
   display: flex;
   justify-content: center;
-  gap: 30px;
-  margin-top: auto;
-  padding-bottom: 100px;
+  gap: 20px;
+  padding: 15px 0;
+  padding-bottom: 90px;
   position: relative;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .action-btn {

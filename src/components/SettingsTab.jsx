@@ -5,15 +5,27 @@ export default function SettingsTab({ user, profile, onLogout, onGoBack }) {
     const [deferredPrompt, setDeferredPrompt] = useState(null);
     const [isInstalled, setIsInstalled] = useState(false);
     const [installStatus, setInstallStatus] = useState('');
+    const [isIOS, setIsIOS] = useState(false);
+    const [showIOSInstructions, setShowIOSInstructions] = useState(false);
 
     useEffect(() => {
+        // Check if iOS
+        const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        setIsIOS(iOS);
+
         // Check if already installed
         if (window.matchMedia('(display-mode: standalone)').matches) {
             setIsInstalled(true);
             return;
         }
 
-        // Listen for the beforeinstallprompt event
+        // Also check for iOS standalone mode
+        if (window.navigator.standalone === true) {
+            setIsInstalled(true);
+            return;
+        }
+
+        // Listen for the beforeinstallprompt event (Android/Chrome)
         const handler = (e) => {
             e.preventDefault();
             setDeferredPrompt(e);
@@ -33,22 +45,29 @@ export default function SettingsTab({ user, profile, onLogout, onGoBack }) {
     }, []);
 
     const handleInstall = async () => {
-        if (!deferredPrompt) {
-            setInstallStatus('Use o menu do navegador para instalar');
+        // For iOS, show instructions
+        if (isIOS) {
+            setShowIOSInstructions(true);
             return;
         }
 
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
+        // For Android/Chrome, use the native prompt
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
 
-        if (outcome === 'accepted') {
-            setIsInstalled(true);
-            setInstallStatus('Instalado com sucesso!');
+            if (outcome === 'accepted') {
+                setIsInstalled(true);
+                setInstallStatus('Instalado com sucesso!');
+            } else {
+                setInstallStatus('Instalação cancelada');
+            }
+
+            setDeferredPrompt(null);
         } else {
-            setInstallStatus('Instalação cancelada');
+            // Fallback for browsers that don't support beforeinstallprompt
+            setInstallStatus('Abra o menu do navegador (⋮) e selecione "Instalar app" ou "Adicionar à tela inicial"');
         }
-
-        setDeferredPrompt(null);
     };
 
     return (
@@ -96,12 +115,34 @@ export default function SettingsTab({ user, profile, onLogout, onGoBack }) {
                             <button className="install-app-btn" onClick={handleInstall}>
                                 📲 Instalar GameSwipe
                             </button>
+
                             {installStatus && (
                                 <p className="install-status">{installStatus}</p>
                             )}
-                            <p className="install-hint">
-                                💡 No iPhone, use Safari e toque em "Compartilhar" → "Adicionar à Tela de Início"
-                            </p>
+
+                            {/* iOS Instructions Modal */}
+                            {showIOSInstructions && (
+                                <div className="ios-instructions">
+                                    <h4>📱 Como instalar no iPhone:</h4>
+                                    <ol>
+                                        <li>Toque no botão <strong>Compartilhar</strong> (ícone quadrado com seta ↑)</li>
+                                        <li>Role para baixo e toque em <strong>"Adicionar à Tela de Início"</strong></li>
+                                        <li>Toque em <strong>"Adicionar"</strong> no canto superior direito</li>
+                                    </ol>
+                                    <button
+                                        className="ios-instructions-close"
+                                        onClick={() => setShowIOSInstructions(false)}
+                                    >
+                                        Entendi!
+                                    </button>
+                                </div>
+                            )}
+
+                            {isIOS && !showIOSInstructions && (
+                                <p className="install-hint">
+                                    💡 No Safari, use o botão Compartilhar para adicionar à tela inicial
+                                </p>
+                            )}
                         </>
                     )}
                 </div>

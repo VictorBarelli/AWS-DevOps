@@ -61,7 +61,7 @@ export default function HomeTab({
                         disabled={!canUndo}
                         title="Voltar"
                     >
-                        ↩
+                        ←
                     </button>
                     <button
                         className="action-btn-overlay nope"

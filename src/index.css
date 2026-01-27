@@ -3267,6 +3267,91 @@ body {
   color: #ef4444;
 }
 
+/* Mobile Responsive Styles for Groups */
+@media (max-width: 480px) {
+  .groups-section {
+    padding: 0 8px;
+    overflow-x: hidden;
+  }
+
+  .groups-header {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 8px;
+  }
+
+  .groups-toggle {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .groups-toggle button {
+    flex: 1;
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .groups-grid {
+    gap: 12px;
+    padding: 0 4px;
+  }
+
+  .group-card {
+    padding: 12px;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .group-emoji {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .group-info {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .group-info h4 {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .group-desc {
+    font-size: 11px;
+    max-width: 100%;
+  }
+
+  .group-meta {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .group-genre {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  .group-members {
+    font-size: 11px;
+  }
+
+  .group-join-btn,
+  .group-chat-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+}
+
 .app-header {
   display: flex;
   justify-content: space-between;
@@ -4271,4 +4356,59 @@ body {
 .game-rating {
   color: #fbbf24;
   font-weight: 600;
+}
+
+/* ==========================================
+   Header Actions Styles
+   ========================================== */
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.settings-btn {
+  background: rgba(139, 92, 246, 0.2) !important;
+  border-color: rgba(139, 92, 246, 0.3) !important;
+}
+
+.settings-btn:hover {
+  background: rgba(139, 92, 246, 0.3) !important;
+}
+
+/* Settings Tab Container */
+.settings-tab {
+  padding: 0;
+  min-height: 100%;
+  overflow-y: auto;
+}
+
+/* Mobile scrolling improvements for admin panel */
+@media (max-width: 768px) {
+  .admin-content {
+    padding: var(--spacing-md);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: calc(100vh - 200px);
+  }
+
+  .admin-games {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .games-list {
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  .add-game-form {
+    padding: 12px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 8px;
+  }
 }

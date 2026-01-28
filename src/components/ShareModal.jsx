@@ -118,7 +118,7 @@ export default function ShareModal({ game, onClose }) {
                                         // Fallback to clipboard
                                         navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
                                         setSuccess(true);
-                                        alert('Link copiado para a área de transferência!');
+                                        // alert removed to fix linter and improve UX
                                         setTimeout(() => onClose(), 2000);
                                     }
                                 }}

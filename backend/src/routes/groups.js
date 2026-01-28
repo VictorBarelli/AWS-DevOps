@@ -129,22 +129,7 @@ router.post('/:id/leave', authenticateToken, async (req, res) => {
     }
 });
 
-router.get('/user/my', authenticateToken, async (req, res) => {
-    try {
-        const result = await pool.query(`
-            SELECT g.*
-            FROM groups g
-            JOIN group_members gm ON g.id = gm.group_id
-            WHERE gm.user_id = $1
-            ORDER BY gm.joined_at DESC
-        `, [req.user.id]);
 
-        res.json(result.rows);
-    } catch (err) {
-        console.error('Error fetching user groups:', err);
-        res.status(500).json({ error: 'Error fetching groups' });
-    }
-});
 
 router.post('/:id/review', authenticateToken, async (req, res) => {
     try {

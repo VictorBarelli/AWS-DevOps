@@ -1360,7 +1360,6 @@ body {
   left: 0;
   width: 100%;
   height: calc(70px + env(safe-area-inset-bottom, 0px));
-  padding-bottom: env(safe-area-inset-bottom, 0px);
   background: var(--bg-elevated);
   border-top: 1px solid var(--border-color);
   display: flex;
@@ -1384,6 +1383,7 @@ body {
   color: var(--text-secondary);
   cursor: pointer;
   padding: var(--spacing-sm);
+  padding-bottom: calc(var(--spacing-sm) + env(safe-area-inset-bottom, 0px));
   position: relative;
   transition: all 0.2s ease;
 }

@@ -28,7 +28,7 @@ export async function requestNotificationPermission() {
         throw new Error('This browser does not support desktop notification');
     }
 
-    const permission = await Notification.requestPermission();
+    const permission = await window.Notification.requestPermission();
     if (permission !== 'granted') {
         throw new Error('Permission not granted for Notification');
     }

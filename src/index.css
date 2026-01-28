@@ -1360,15 +1360,17 @@ body {
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 500px;
-  height: 70px;
+  max-width: 600px;
+  height: calc(70px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   background: var(--bg-elevated);
   border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: space-around;
   align-items: stretch;
   z-index: 1000;
-  padding: 0 var(--spacing-md);
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
   box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.3);
 }
 

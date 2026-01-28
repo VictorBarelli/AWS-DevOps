@@ -30,17 +30,7 @@ output "logs_bucket_name" {
   value = aws_s3_bucket.logs.id
 }
 
-output "staging_s3_bucket_name" {
-  value = aws_s3_bucket.staging.id
-}
 
-output "staging_cloudfront_distribution_id" {
-  value = aws_cloudfront_distribution.staging.id
-}
-
-output "staging_website_url" {
-  value = "https://${aws_cloudfront_distribution.staging.domain_name}"
-}
 
 
 

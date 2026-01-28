@@ -467,7 +467,7 @@ export default function App() {
 
         setLoading(true);
         // Reset all filters and states related to game fetching
-        setMatches([]);
+        // setMatches([]); // Don't clear matches!
         setSeenIds(new Set());
         setSelectedGenres([]);
         setShowAdult(false);

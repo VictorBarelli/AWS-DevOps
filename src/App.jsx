@@ -302,8 +302,12 @@ export default function App() {
             pageSize: 20
         })
             .then(data => {
-                // Don't filter by seenIds here - let users see all games matching filters
-                setGames(data.games);
+                // Filter out games that are already liked/matched
+                const newGames = data.games.filter(g =>
+                    !matches.some(m => m.id === g.id) && !seenIds.has(g.id)
+                );
+
+                setGames(newGames);
                 setHasMore(!!data.next);
                 setLoading(false);
             })
@@ -327,7 +331,9 @@ export default function App() {
                 pageSize: 20
             });
 
-            const newGames = data.games.filter(g => !seenIds.has(g.id));
+            const newGames = data.games.filter(g =>
+                !matches.some(m => m.id === g.id) && !seenIds.has(g.id)
+            );
             setGames(prev => [...prev, ...newGames]);
             setPage(nextPage);
             setHasMore(!!data.next);

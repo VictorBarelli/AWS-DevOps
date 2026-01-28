@@ -63,12 +63,4 @@ resource "aws_instance" "backend" {
   }
 }
 
-resource "aws_security_group_rule" "rds_from_backend" {
-  type                     = "ingress"
-  from_port                = 5432
-  to_port                  = 5432
-  protocol                 = "tcp"
-  security_group_id        = aws_security_group.ecs.id
-  source_security_group_id = aws_security_group.backend.id
-  description              = "PostgreSQL from Backend EC2"
-}
+

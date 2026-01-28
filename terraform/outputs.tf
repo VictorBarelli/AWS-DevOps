@@ -42,21 +42,7 @@ output "staging_website_url" {
   value = "https://${aws_cloudfront_distribution.staging.domain_name}"
 }
 
-output "ecr_repository_url" {
-  value = aws_ecr_repository.app.repository_url
-}
 
-output "ecs_cluster_name" {
-  value = aws_ecs_cluster.main.name
-}
-
-output "ecs_service_name" {
-  value = aws_ecs_service.app.name
-}
-
-output "alb_dns_name" {
-  value = "http://${aws_lb.main.dns_name}"
-}
 
 output "backend_public_ip" {
   value = aws_instance.backend.public_ip

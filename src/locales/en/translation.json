@@ -1,0 +1,27 @@
+{
+    "settings": {
+        "title": "Settings",
+        "back": "Back",
+        "account": "Account",
+        "email": "Email",
+        "name": "Name",
+        "app": {
+            "title": "Application",
+            "installed": "✓ Installed",
+            "install_label": "📱 Install App",
+            "install_desc": "Faster access",
+            "install_btn": "📲 Install GameSwipe"
+        },
+        "preferences": "Preferences",
+        "notifications": "🔔 Notifications",
+        "notifications_on": "✅ Enabled",
+        "notifications_off": "❌ Disabled",
+        "theme": "🎨 Theme",
+        "language": "🌐 Language",
+        "about": "About",
+        "version": "Version",
+        "terms": "📜 Terms of Use",
+        "privacy": "🔒 Privacy Policy",
+        "logout": "🚪 Log Out"
+    }
+}

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { subscribeToPushNotifications, checkSubscriptionStatus, requestNotificationPermission } from '../services/notifications';
+import { useTranslation } from 'react-i18next';
 
 export default function SettingsTab({ user, profile, onLogout, onGoBack }) {
+    const { t, i18n } = useTranslation();
     const [deferredPrompt, setDeferredPrompt] = useState(null);
     const [isInstalled, setIsInstalled] = useState(false);
     const [installStatus, setInstallStatus] = useState('');
@@ -94,6 +96,11 @@ export default function SettingsTab({ user, profile, onLogout, onGoBack }) {
         }
     };
 
+    const toggleLanguage = () => {
+        const newLang = i18n.language === 'pt' ? 'en' : 'pt';
+        i18n.changeLanguage(newLang);
+    };
+
     return (
         <motion.div
             className="tab-content settings-tab"
@@ -104,40 +111,40 @@ export default function SettingsTab({ user, profile, onLogout, onGoBack }) {
         >
             <div className="settings-header">
                 <button className="back-btn" onClick={onGoBack}>
-                    ← Voltar
+                    ← {t('settings.back')}
                 </button>
-                <h2>Configurações</h2>
+                <h2>{t('settings.title')}</h2>
             </div>
 
             <div className="settings-content">
                 <div className="settings-section">
-                    <h3>Conta</h3>
+                    <h3>{t('settings.account')}</h3>
                     <div className="settings-item">
-                        <span className="settings-label">Email</span>
+                        <span className="settings-label">{t('settings.email')}</span>
                         <span className="settings-value">{user?.email || 'Não definido'}</span>
                     </div>
                     <div className="settings-item">
-                        <span className="settings-label">Nome</span>
+                        <span className="settings-label">{t('settings.name')}</span>
                         <span className="settings-value">{profile?.name || 'Não definido'}</span>
                     </div>
                 </div>
 
                 {/* PWA Install Section */}
                 <div className="settings-section install-section">
-                    <h3>Aplicativo</h3>
+                    <h3>{t('settings.app.title')}</h3>
                     {isInstalled ? (
                         <div className="settings-item">
                             <span className="settings-label">📱 GameSwipe</span>
-                            <span className="settings-value installed">✓ Instalado</span>
+                            <span className="settings-value installed">{t('settings.app.installed')}</span>
                         </div>
                     ) : (
                         <>
                             <div className="settings-item">
-                                <span className="settings-label">📱 Instalar App</span>
-                                <span className="settings-value">Acesse mais rápido</span>
+                                <span className="settings-label">{t('settings.app.install_label')}</span>
+                                <span className="settings-value">{t('settings.app.install_desc')}</span>
                             </div>
                             <button className="install-app-btn" onClick={handleInstall}>
-                                📲 Instalar GameSwipe
+                                {t('settings.app.install_btn')}
                             </button>
 
                             {installStatus && (
@@ -171,11 +178,11 @@ export default function SettingsTab({ user, profile, onLogout, onGoBack }) {
                 </div>
 
                 <div className="settings-section">
-                    <h3>Preferências</h3>
+                    <h3>{t('settings.preferences')}</h3>
                     <div className="settings-item clickable" onClick={handleToggleNotifications}>
-                        <span className="settings-label">🔔 Notificações</span>
+                        <span className="settings-label">{t('settings.notifications')}</span>
                         <span className="settings-value">
-                            {notificationsEnabled ? '✅ Ativado' : '❌ Desativado'}
+                            {notificationsEnabled ? t('settings.notifications_on') : t('settings.notifications_off')}
                         </span>
                     </div>
                     {notificationStatus && (
@@ -185,34 +192,37 @@ export default function SettingsTab({ user, profile, onLogout, onGoBack }) {
                     )}
 
                     <div className="settings-item clickable">
-                        <span className="settings-label">🎨 Tema</span>
+                        <span className="settings-label">{t('settings.theme')}</span>
                         <span className="settings-arrow">→</span>
                     </div>
-                    <div className="settings-item clickable">
-                        <span className="settings-label">🌐 Idioma</span>
-                        <span className="settings-arrow">→</span>
+                    <div className="settings-item clickable" onClick={toggleLanguage}>
+                        <span className="settings-label">{t('settings.language')}</span>
+                        <div className="settings-value" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>{i18n.language === 'en' ? '🇺🇸 English' : '🇧🇷 Português'}</span>
+                            <span className="settings-arrow">→</span>
+                        </div>
                     </div>
                 </div>
 
                 <div className="settings-section">
-                    <h3>Sobre</h3>
+                    <h3>{t('settings.about')}</h3>
                     <div className="settings-item">
-                        <span className="settings-label">Versão</span>
+                        <span className="settings-label">{t('settings.version')}</span>
                         <span className="settings-value">1.1.0</span>
                     </div>
                     <div className="settings-item clickable">
-                        <span className="settings-label">📜 Termos de Uso</span>
+                        <span className="settings-label">{t('settings.terms')}</span>
                         <span className="settings-arrow">→</span>
                     </div>
                     <div className="settings-item clickable">
-                        <span className="settings-label">🔒 Política de Privacidade</span>
+                        <span className="settings-label">{t('settings.privacy')}</span>
                         <span className="settings-arrow">→</span>
                     </div>
                 </div>
 
                 <div className="settings-section danger-section">
                     <button className="settings-logout-btn" onClick={onLogout}>
-                        🚪 Sair da Conta
+                        {t('settings.logout')}
                     </button>
                 </div>
             </div>

@@ -14,15 +14,16 @@ i18n
     // init i18next
     // for all options read: https://www.i18next.com/overview/configuration-options
     .init({
+    .init({
         resources: {
-            pt: {
-                translation: ptTranslation
-            },
-            en: {
-                translation: enTranslation
-            }
+            pt: { translation: ptTranslation },
+            'pt-BR': { translation: ptTranslation },
+            en: { translation: enTranslation },
+            'en-US': { translation: enTranslation }
         },
         fallbackLng: 'pt',
+        supportedLngs: ['pt', 'pt-BR', 'en', 'en-US'],
+        load: 'currentOnly', // Try to load specific, then fall back if needed, but here we cover both
         debug: true,
 
         interpolation: {
@@ -30,4 +31,4 @@ i18n
         }
     });
 
-export default i18n;
+        export default i18n;
